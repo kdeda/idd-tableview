@@ -1,0 +1,94 @@
+{
+  "results": [
+    {
+      "objectId": "SH6mip0Oro",
+      "Year": 2018,
+      "Make": "Tesla",
+      "Model": "Model 3",
+      "Category": "Sedan",
+      "createdAt": "2020-01-27T22:18:08.398Z",
+      "updatedAt": "2020-01-27T22:18:08.398Z"
+    },
+    {
+      "objectId": "7Us0aEugVL",
+      "Year": 2016,
+      "Make": "Tesla",
+      "Model": "Model S",
+      "Category": "Sedan",
+      "createdAt": "2020-01-27T22:18:08.400Z",
+      "updatedAt": "2020-01-27T22:18:08.400Z"
+    },
+    {
+      "objectId": "1EMRcGRHTe",
+      "Year": 2019,
+      "Make": "Tesla",
+      "Model": "Model X",
+      "Category": "SUV",
+      "createdAt": "2020-01-27T22:18:08.398Z",
+      "updatedAt": "2020-01-27T22:18:08.398Z"
+    },
+    {
+      "objectId": "WoDeIHZjJE",
+      "Year": 2018,
+      "Make": "Tesla",
+      "Model": "Model S",
+      "Category": "Sedan",
+      "createdAt": "2020-01-27T22:18:08.398Z",
+      "updatedAt": "2020-01-27T22:18:08.398Z"
+    },
+    {
+      "objectId": "RgF7JiK7s3",
+      "Year": 2019,
+      "Make": "Tesla",
+      "Model": "Model S",
+      "Category": "Sedan",
+      "createdAt": "2020-01-27T22:18:08.398Z",
+      "updatedAt": "2020-01-27T22:18:08.398Z"
+    },
+    {
+      "objectId": "UEaOlfuJGK",
+      "Year": 2015,
+      "Make": "Tesla",
+      "Model": "Model S",
+      "Category": "Sedan",
+      "createdAt": "2020-01-27T22:18:08.400Z",
+      "updatedAt": "2020-01-27T22:18:08.400Z"
+    },
+    {
+      "objectId": "O1iqTzwSl2",
+      "Year": 2019,
+      "Make": "Tesla",
+      "Model": "Model 3",
+      "Category": "Sedan",
+      "createdAt": "2020-01-27T22:18:08.398Z",
+      "updatedAt": "2020-01-27T22:18:08.398Z"
+    },
+    {
+      "objectId": "64zfknd9b3",
+      "Year": 2013,
+      "Make": "Tesla",
+      "Model": "Model S",
+      "Category": "Sedan",
+      "createdAt": "2020-01-27T22:18:08.400Z",
+      "updatedAt": "2020-01-27T22:18:08.400Z"
+    },
+    {
+      "objectId": "prhqD3t2kX",
+      "Year": 2017,
+      "Make": "Tesla",
+      "Model": "Model X",
+      "Category": "SUV",
+      "createdAt": "2020-01-27T22:18:08.400Z",
+      "updatedAt": "2020-01-27T22:18:08.400Z"
+    },
+    {
+      "objectId": "SpVywl0RPX",
+      "Year": 2017,
+      "Make": "Tesla",
+      "Model": "Model S",
+      "Category": "Sedan",
+      "createdAt": "2020-01-27T22:18:08.400Z",
+      "updatedAt": "2020-01-27T22:18:08.400Z"
+    }
+  ]
+}

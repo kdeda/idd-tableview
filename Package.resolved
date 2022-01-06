@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "idd-log4-swift",
+        "repositoryURL": "https://github.com/kdeda/idd-log4-swift.git",
+        "state": {
+          "branch": null,
+          "revision": "49fa590b224343704f209277ec134c87451ca56d",
+          "version": "1.1.1"
+        }
+      }
+    ]
+  },
+  "version": 1
+}
