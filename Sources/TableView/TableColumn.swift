@@ -61,3 +61,10 @@ public struct TableColumn<RowValue>: Identifiable where RowValue: Equatable {
         return rv
     }
 }
+
+extension Array where Element: Identifiable {
+    public func isLastColumn(_ column: Element) -> Bool {
+        let index = firstIndex(where: { $0.id == column.id }) ?? 0
+        return index == count - 1
+    }
+}

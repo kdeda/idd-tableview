@@ -14,7 +14,7 @@ import Log4swift
 struct TableHeader<RowValue>: View where RowValue: Equatable {
     @Binding var columns: [TableColumn<RowValue>]
     @Binding var sortDescriptors: [TableColumnSort<RowValue>]
-
+    
     public init(
         columns: Binding<[TableColumn<RowValue>]>,
         sortDescriptors: Binding<[TableColumnSort<RowValue>]>
@@ -56,7 +56,9 @@ struct TableHeader<RowValue>: View where RowValue: Equatable {
                     .buttonStyle(.borderless)
                     .foregroundColor(Color.primary)
                     .frame(minWidth: column.minWidth, maxWidth: column.maxWidth, alignment: column.alignment)
-                    Divider()
+                    if !columns.isLastColumn(column) {
+                        Divider()
+                    }
                 }
                 Spacer()
             }

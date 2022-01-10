@@ -44,15 +44,17 @@ public struct Table<RowValue>: View where RowValue: Identifiable, RowValue: Hash
             TableHeader(columns: $columns, sortDescriptors: $sortDescriptors)
             List(rows, selection: $selection) { rowValue in
                 HStack(alignment: .center, spacing: 6) {
-                    ForEach(columns) { column in
+                    ForEach(columns) { column in                        
                         column.createCellView(rowValue)
                             .frame(minWidth: column.minWidth, maxWidth: column.maxWidth, alignment: column.alignment)
                         // We have 2 options here, display the rectangle as an invisible vertical devider
                         // Or display the Divider
-//                        Rectangle()
-//                            .fill(Color.clear)
-//                            .frame(width: 1, height: 6)
-                        Divider()
+                        // Rectangle()
+                        //  .fill(Color.clear)
+                        //  .frame(width: 1, height: 6)
+                        if !columns.isLastColumn(column) {
+                            Divider()
+                        }
                     }
                     Spacer()
                 }
