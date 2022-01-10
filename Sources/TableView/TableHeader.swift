@@ -55,7 +55,7 @@ struct TableHeader<RowValue>: View where RowValue: Equatable {
                     }
                     .buttonStyle(.borderless)
                     .foregroundColor(Color.primary)
-                    .frame(maxWidth: column.width, alignment: .trailing)
+                    .frame(minWidth: column.minWidth, maxWidth: column.maxWidth, alignment: column.alignment)
                     Divider()
                 }
                 Spacer()
@@ -66,5 +66,52 @@ struct TableHeader<RowValue>: View where RowValue: Equatable {
             Divider()
         }
         .frame(height: 30)
+    }
+}
+
+struct TableHeaderPreview: View {
+    struct Person: Equatable, Hashable, Comparable {
+        var firstName: String
+        var lastName: String
+        var address: String
+
+        static func < (lhs: Person, rhs: Person) -> Bool {
+            false
+        }
+    }
+    @State private var sortDescriptors: [TableColumnSort<Person>] = [
+        .init(\.firstName)
+    ]
+    @State private var columns: [TableColumn<Person>] = [
+        TableColumn("First", alignment: .trailing, sortDescriptor: .init(\Person.firstName)) { rowValue in
+            Text("\(rowValue.firstName)")
+                .frame(alignment: .trailing)
+        }
+            .frame(width: 130),
+        TableColumn("Last", alignment: .trailing, sortDescriptor: .init(\Person.lastName)) { rowValue in
+            Text(rowValue.lastName)
+                .frame(alignment: .trailing)
+        }
+            .frame(width: 80),
+        TableColumn("", alignment: .leading, sortDescriptor: .init(\Person.self)) { rowValue in
+            Text("")
+        }
+            .frame(width: 20),
+        TableColumn("Address", alignment: .leading, sortDescriptor: .init(\Person.address)) { rowValue in
+            Text(rowValue.address)
+                .frame(alignment: .trailing)
+        }
+        .frame(minWidth: 120, maxWidth: .infinity)
+    ]
+
+    var body: some View {
+        TableHeader<Person>(columns: $columns, sortDescriptors: $sortDescriptors)
+    }
+}
+
+struct TableHeaderPreview_Previews: PreviewProvider {
+    static var previews: some View {
+        TableHeaderPreview()
+            .frame(minWidth: 480)
     }
 }

@@ -105,11 +105,11 @@
 			isa = PBXGroup;
 			children = (
 				F3E9F4FD277E63C300102BDC /* MacTableApp.swift */,
-				F3E9F52E277E6D4200102BDC /* cars.json */,
 				F3E9F4FF277E63C300102BDC /* ContentView.swift */,
 				F3E9F52C277E676000102BDC /* DataModel.swift */,
 				F3E9F501277E63C400102BDC /* Assets.xcassets */,
 				F3E9F506277E63C400102BDC /* MacTable.entitlements */,
+				F3E9F52E277E6D4200102BDC /* cars.json */,
 				F3E9F503277E63C400102BDC /* Preview Content */,
 			);
 			path = MacTable;

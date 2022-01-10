@@ -108,9 +108,9 @@
 		F3D182C827873B88001377CC /* TCATable */ = {
 			isa = PBXGroup;
 			children = (
-				F3D182FF27873CAF001377CC /* Features */,
 				F3D182C927873B88001377CC /* TCATableApp.swift */,
 				F3D182CB27873B88001377CC /* ContentView.swift */,
+				F3D182FF27873CAF001377CC /* Features */,
 				F3D182CD27873B8A001377CC /* Assets.xcassets */,
 				F3D182D227873B8A001377CC /* TCATable.entitlements */,
 				F3D182CF27873B8A001377CC /* Preview Content */,

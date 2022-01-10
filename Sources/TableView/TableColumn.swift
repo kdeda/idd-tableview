@@ -14,19 +14,19 @@ public struct TableColumn<RowValue>: Identifiable where RowValue: Equatable {
     public var id = UUID()
     public var title = ""
     public var width: CGFloat = 100
+    public var maxWidth: CGFloat = 100
+    public var minWidth: CGFloat = 100
     public var alignment: Alignment = .leading
     public var sortDescriptor: TableColumnSort<RowValue>
     private var content: (RowValue) -> AnyView
 
     public init<Content: View>(
         _ title: String,
-        width: CGFloat = 100,
         alignment: Alignment = .leading,
         sortDescriptor: TableColumnSort<RowValue>,
         @ViewBuilder content: @escaping (RowValue) -> Content
     ) {
         self.title = title
-        self.width = width
         self.alignment = alignment
         self.sortDescriptor = sortDescriptor
         self.content = { rowValue in
@@ -41,5 +41,23 @@ public struct TableColumn<RowValue>: Identifiable where RowValue: Equatable {
 
     public var iconName: String {
         sortDescriptor.ascending ? "chevron.up" : "chevron.down"
+    }
+    
+    public func frame(minWidth: CGFloat = 100, maxWidth: CGFloat = 100) -> Self {
+        var rv = self
+        
+        rv.minWidth = minWidth
+        rv.width = minWidth
+        rv.maxWidth = maxWidth
+        return rv
+    }
+    
+    public func frame(width: CGFloat = 100) -> Self {
+        var rv = self
+        
+        rv.minWidth = width
+        rv.width = width
+        rv.maxWidth = width
+        return rv
     }
 }

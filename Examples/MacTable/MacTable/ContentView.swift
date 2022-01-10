@@ -32,28 +32,33 @@ struct ContentView: View {
                     }
                   )
             ) {
-                TableColumn("Year", width: 130, alignment: .trailing, sortDescriptor: .init(\Car.year)) { rowValue in
+                TableColumn("Year", alignment: .trailing, sortDescriptor: .init(\Car.year)) { rowValue in
                     Text("\(rowValue.year)")
                         .frame(alignment: .trailing)
                 }
-                TableColumn("Make", width: 80, alignment: .trailing, sortDescriptor: .init(\Car.make)) { rowValue in
+                .frame(width: 130)
+                TableColumn("Make", alignment: .trailing, sortDescriptor: .init(\Car.make)) { rowValue in
                     Text(rowValue.make)
                         .frame(alignment: .trailing)
                 }
-                TableColumn("", width: 20, alignment: .leading, sortDescriptor: .init(\Car.self)) { rowValue in
+                .frame(width: 80)
+                TableColumn("", alignment: .leading, sortDescriptor: .init(\Car.self)) { rowValue in
                     Text("")
                 }
-                TableColumn("Model", width: 120, alignment: .leading, sortDescriptor: .init(\Car.model)) { rowValue in
+                .frame(width: 20)
+                TableColumn("Model", alignment: .leading, sortDescriptor: .init(\Car.model)) { rowValue in
                     Text(rowValue.model)
                         .frame(alignment: .trailing)
                 }
-                TableColumn("Category", width: 160, alignment: .leading, sortDescriptor: .init(\Car.category)) { rowValue in
+                .frame(width: 120)
+                TableColumn("Category", alignment: .leading, sortDescriptor: .init(\Car.category)) { rowValue in
                     Text(rowValue.category)
                         .frame(alignment: .trailing)
                 }
+                .frame(minWidth: 120, maxWidth: .infinity)
             }
         }
-        .frame(minWidth: 640, maxWidth: 1080, minHeight: 480, maxHeight: 800)
+        .frame(minWidth: 800, maxWidth: 1280, minHeight: 480, maxHeight: 800)
     }
 }
 
