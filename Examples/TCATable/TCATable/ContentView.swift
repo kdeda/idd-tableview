@@ -14,13 +14,50 @@ import TableView
 struct ContentView: View {
     let store: Store<AppState, AppAction>
 
+    fileprivate func selectionString(count: Int) -> String {
+        switch count {
+        case 0:
+            return "empty"
+        case 1:
+            return "one file"
+        case _ where count > 1:
+            return "\(count) files"
+        default:
+            return ""
+        }
+    }
+    
+    @ViewBuilder
+    fileprivate func headerView() -> some View {
+        WithViewStore(store) { viewStore in
+            HStack {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("This is the TCATable demo of the TableView.")
+                        .font(.headline)
+                    Text("It shows support for multiple row selection and TCA")
+                        .font(.subheadline)
+                    Text("Selection: ")
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
+                    +
+                    Text(selectionString(count: viewStore.selectedFiles.count))
+                        .font(.subheadline)
+                }
+                Spacer()
+            }
+            .padding(.all, 18)
+        }
+    }
+
     var body: some View {
         WithViewStore(store) { viewStore in
             VStack(spacing: 0) {
+                headerView()
                 Divider()
-                TableView.Table(viewStore.files,
-                      selection: viewStore.binding(\.$selectedFiles),
-                      sortDescriptors: viewStore.binding(\.$sortDescriptors)
+                TableView.Table(
+                    viewStore.files,
+                    multipleSelection: viewStore.binding(\.$selectedFiles),
+                    sortDescriptors: viewStore.binding(\.$sortDescriptors)
                 ) {
                     TableColumn("File Size in Bytes", alignment: .trailing, sortDescriptor: .init(\File.physicalSize)) { rowValue in
                         Text(rowValue.logicalSize.decimalFormatted)

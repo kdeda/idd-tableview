@@ -12,16 +12,50 @@ import TableView
 struct ContentView: View {
     var cars = Store.cars
     @State var rows = Store.cars
-    @State var selection = Set<Car.ID>()
+    @State var selection: Car.ID?
     @State var sortDescriptors: [TableColumnSort<Car>] = [
         .init(\.make)
     ]
+    
+    fileprivate func selectionString() -> String {
+        switch selection {
+        case .none:
+            return "empty"
+        case let .some(carID):
+            guard let car = rows.first(where: { $0.id == carID })
+            else { return "empty"}
+            return "\(car.make), \(car.model), \(car.year)"
+        }
+    }
+
+    @ViewBuilder
+    fileprivate func headerView() -> some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 6) {
+                Text("This is the MacTable demo of the TableView package.")
+                    .font(.headline)
+                Text("It shows support for single row selection and vanilla swift bindings")
+                    .font(.subheadline)
+                Text("Selection: ")
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+                +
+                Text(selectionString())
+                    .font(.subheadline)
+            }
+            Spacer()
+        }
+        .padding(.all, 18)
+    }
 
     var body: some View {
         VStack(spacing: 0) {
-            TableView.Table(rows,
-                  selection: $selection,
-                  sortDescriptors: Binding<[TableColumnSort<Car>]>(
+            headerView()
+            Divider()
+            TableView.Table(
+                rows,
+                singleSelection: $selection,
+                sortDescriptors: Binding<[TableColumnSort<Car>]>(
                     get: {
                         sortDescriptors
                     }, set: { (sortDescriptors: [TableColumnSort<Car>]) in
@@ -30,7 +64,7 @@ struct ContentView: View {
                         let sortDescriptor = sortDescriptors[0]
                         rows = rows.sorted(by: sortDescriptor.comparator)
                     }
-                  )
+                )
             ) {
                 TableColumn("Year", alignment: .trailing, sortDescriptor: .init(\Car.year)) { rowValue in
                     Text("\(rowValue.year)")
