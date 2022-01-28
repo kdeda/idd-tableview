@@ -89,10 +89,10 @@ struct ContentView: View {
                     Text(rowValue.category)
                         .frame(alignment: .trailing)
                 }
-                .frame(minWidth: 120, maxWidth: .infinity)
+                .frame(minWidth: 180, maxWidth: .infinity)
             }
         }
-        .frame(minWidth: 800, maxWidth: 1280, minHeight: 480, maxHeight: 800)
+        .frame(maxWidth: 1280, minHeight: 480, maxHeight: 800)
     }
 }
 

@@ -67,7 +67,7 @@ public struct Table<RowValue>: View where RowValue: Identifiable, RowValue: Hash
             HStack(alignment: .center, spacing: 6) {
                 ForEach(columns) { column in
                     column.createCellView(rowValue)
-                        .frame(maxWidth: column.maxWidth, alignment: column.alignment)
+                        .frame(minWidth: column.minWidth, maxWidth: column.maxWidth, alignment: column.alignment)
                     // We have 2 options here, display the rectangle as an invisible vertical devider
                     // Or display the Divider
                     // Rectangle()
