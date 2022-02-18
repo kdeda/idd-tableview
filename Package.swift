@@ -29,6 +29,7 @@ let package = Package(
         .testTarget(
             name: "TableViewTests",
             dependencies: [
+                "TableView",
                 .product(name: "Log4swift", package: "idd-log4-swift")
             ]
         )
