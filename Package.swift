@@ -15,7 +15,7 @@ let package = Package(
             targets: ["TableView"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/kdeda/idd-log4-swift.git", from: "1.1.1")
+        .package(url: "https://github.com/kdeda/idd-log4-swift.git", from: "1.1.2")
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
