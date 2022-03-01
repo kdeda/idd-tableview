@@ -16,6 +16,7 @@ struct ContentView: View {
     @State var sortDescriptors: [TableColumnSort<Car>] = [
         .init(\.make)
     ]
+    @State var showExtraColumn = false
     
     fileprivate func selectionString() -> String {
         switch selection {
@@ -30,7 +31,7 @@ struct ContentView: View {
 
     @ViewBuilder
     fileprivate func headerView() -> some View {
-        HStack {
+        HStack(alignment: .top) {
             VStack(alignment: .leading, spacing: 6) {
                 Text("This is the MacTable demo of the TableView package.")
                     .font(.headline)
@@ -44,6 +45,15 @@ struct ContentView: View {
                     .font(.subheadline)
             }
             Spacer()
+            VStack {
+                Button(action: {
+                    showExtraColumn.toggle()
+                }) {
+                    Text(showExtraColumn ? "Hide The Extra Column" : "Show The Extra Column")
+                        .fontWeight(.semibold)
+                }
+                // .buttonStyle(PlainButtonStyle())
+            }
         }
         .padding(.all, 18)
     }
@@ -85,12 +95,20 @@ struct ContentView: View {
                         .frame(alignment: .trailing)
                 }
                 .frame(width: 120)
+                if showExtraColumn {
+                    TableColumn("Extra", alignment: .leading, sortDescriptor: .init(\Car.extraColumn)) { rowValue in
+                        Text(rowValue.extraColumn)
+                            .frame(alignment: .trailing)
+                    }
+                    .frame(minWidth: 120, maxWidth: .infinity)
+                }
                 TableColumn("Category", alignment: .leading, sortDescriptor: .init(\Car.category)) { rowValue in
                     Text(rowValue.category)
                         .frame(alignment: .trailing)
                 }
                 .frame(minWidth: 180, maxWidth: .infinity)
             }
+            .id(showExtraColumn ? "showExtraColumn=true" : "showExtraColumn=false")
         }
         .frame(maxWidth: 1280, minHeight: 480, maxHeight: 800)
     }

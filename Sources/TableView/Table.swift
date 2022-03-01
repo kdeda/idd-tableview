@@ -31,34 +31,40 @@ public struct Table<RowValue>: View where RowValue: Identifiable, RowValue: Hash
     @Binding private var singleSelection: RowValue.ID?
     @Binding private var multipleSelection: Set<RowValue.ID>
     @Binding private var sortDescriptors: [TableColumnSort<RowValue>]
-    @State private var columns: [TableColumn<RowValue>]
+    @State private var columns: [TableColumn<RowValue>] = []
     
     public init(
         _ rows: Array<RowValue>,
         singleSelection: Binding<RowValue.ID?>,
         sortDescriptors: Binding<[TableColumnSort<RowValue>]>,
-        @ArrayBuilder<TableColumn<RowValue>> columns: @escaping () -> [TableColumn<RowValue>]
+        @TableColumnBuilder columns: @escaping () -> [TableColumn<RowValue>]
     ) {
         self.rows = rows
         self.selectionType = .single
         self._singleSelection = singleSelection
         self._multipleSelection = .constant(Set())
         self._sortDescriptors = sortDescriptors
-        self._columns = State(initialValue: columns())
+        
+        let columns = columns().updateSortDescriptors(sortDescriptors.wrappedValue)
+        self._columns = State(initialValue: columns)
+        Log4swift[Self.self].info("columns: \(self.columns.count)")
     }
-    
+
     public init(
         _ rows: Array<RowValue>,
         multipleSelection: Binding<Set<RowValue.ID>>,
         sortDescriptors: Binding<[TableColumnSort<RowValue>]>,
-        @ArrayBuilder<TableColumn<RowValue>> columns: @escaping () -> [TableColumn<RowValue>]
+        @TableColumnBuilder columns: @escaping () -> [TableColumn<RowValue>]
     ) {
         self.rows = rows
         self.selectionType = .multiple
         self._singleSelection = .constant(.none)
         self._multipleSelection = multipleSelection
         self._sortDescriptors = sortDescriptors
-        self._columns = State(initialValue: columns())
+
+        let columns = columns().updateSortDescriptors(sortDescriptors.wrappedValue)
+        self._columns = State(initialValue: columns)
+        Log4swift[Self.self].info("columns: \(self.columns.count)")
     }
 
     @ViewBuilder
@@ -99,7 +105,9 @@ public struct Table<RowValue>: View where RowValue: Identifiable, RowValue: Hash
     }
 
     public var body: some View {
-        VStack(spacing: 0) {
+        Log4swift[Self.self].info("columns: \(self.columns.count)")
+
+        return VStack(spacing: 0) {
             TableHeader(columns: $columns, sortDescriptors: $sortDescriptors)
             
             switch selectionType {
@@ -107,5 +115,50 @@ public struct Table<RowValue>: View where RowValue: Identifiable, RowValue: Hash
             case .multiple: multipleSelectionView()
             }
         }
+//        .id(self.columns.count)
+//        .dump()
+    }
+}
+
+/// To better understand this, read
+/// https://theswiftdev.com/result-builders-in-swift/
+///
+@resultBuilder
+public enum TableColumnBuilder {
+    public static func buildBlock<RowValue>(_ components: TableColumn<RowValue>...) -> [TableColumn<RowValue>] {
+        components
+    }
+
+    public static func buildBlock<RowValue>(_ components: [TableColumn<RowValue>]...) -> [TableColumn<RowValue>] {
+        components.flatMap { $0 }
+    }
+
+    public static func buildEither<RowValue>(first component: [TableColumn<RowValue>]) -> [TableColumn<RowValue>] {
+        return component
+    }
+
+    public static func buildEither<RowValue>(second component: [TableColumn<RowValue>]) -> [TableColumn<RowValue>] {
+        return component
+    }
+
+    public static func buildOptional<RowValue>(_ component: [TableColumn<RowValue>]?) -> [TableColumn<RowValue>] {
+        component ?? []
+    }
+
+    public static func buildExpression<RowValue>(_ expression: TableColumn<RowValue>) -> [TableColumn<RowValue>] {
+        [expression]
+    }
+
+    public static func buildArray<RowValue>(_ components: [[TableColumn<RowValue>]]) -> [TableColumn<RowValue>] {
+        components.flatMap { $0 }
+    }
+}
+
+extension View {
+    func dump() -> Self {
+        let debugString = Mirror(reflecting: self)
+        
+        Log4swift[Self.self].info("\(debugString)")
+        return self
     }
 }

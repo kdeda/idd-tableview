@@ -24,20 +24,27 @@ struct TableHeader<RowValue>: View where RowValue: Equatable {
     }
 
     private func isSelectedColumn(_ column: TableColumn<RowValue>) -> Bool {
-        sortDescriptors.first(where: { $0.value == column.sortDescriptor.value  }) != nil
+        let rv = sortDescriptors.first(where: { $0.value == column.sortDescriptor.value }) != nil
+        
+        if rv {
+            Log4swift[Self.self].info("selected: '\(column.title)' iconName: '\(column.iconName)'")
+        }
+        return rv
     }
     
     var body: some View {
-        VStack(spacing: 0) {
+        Log4swift[Self.self].info("columns: \(self.columns.count)")
+
+        return VStack(spacing: 0) {
             HStack(alignment: .center, spacing: 6) {
                 ForEach($columns) { $column in
                     Button(action: {
                         // TODO: When we select this column header and swap the sort
                         // we want to slightly turn the background light gray or secondary color
                         // and when the sort has completed revert back to normal color
-                        Log4swift[Self.self].info("sortDescriptor.ascending: '\(column.sortDescriptor.ascending)'")
+                        Log4swift[Self.self].info("column: '\(column.title)' ascending: '\(column.sortDescriptor.ascending)'")
                         column.sortDescriptor.ascending.toggle()
-                        Log4swift[Self.self].info("sortDescriptor.ascending: '\(column.sortDescriptor.ascending)'")
+                        Log4swift[Self.self].info("column: '\(column.title)' ascending: '\(column.sortDescriptor.ascending)'")
 
                         // for now we are going to manage one sort at a time
                         sortDescriptors = [column.sortDescriptor]

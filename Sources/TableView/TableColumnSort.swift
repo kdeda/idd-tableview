@@ -34,7 +34,7 @@ public struct TableColumnSort<RowValue> where RowValue: Equatable {
 extension TableColumnSort: Equatable {
     /// We are doing this to play nice with TCA
     /// There are no easy ways to implement Equatable with function variables
-    static public func == (lhs: Self, rhs: Self) -> Bool {
+    public static func == (lhs: Self, rhs: Self) -> Bool {
         lhs.value == rhs.value && lhs.ascending == rhs.ascending
     }
 }

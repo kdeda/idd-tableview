@@ -33,6 +33,10 @@ struct Car: Codable {
         case model = "Model"
         case category = "Category"
     }
+    
+    var extraColumn: String {
+        "\(make) - \(model)"
+    }
 }
 
 extension Car: Equatable {}
