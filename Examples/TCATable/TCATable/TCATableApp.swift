@@ -7,13 +7,29 @@
 //
 
 import SwiftUI
-import StoreKit
+import Log4swift
 
 @main
 struct TCATableApp: App {
+    init() {
+        let IDDLogLogFileName: String? = {
+            if UserDefaults.standard.bool(forKey: "standardLog") {
+                // Log4swift.getLogger("Application").info("Starting as normal process (not a daemon) ...")
+                return nil
+            } else {
+                // Log4swift.getLogger("Application").info("Starting as daemon ...")
+                return URL(fileURLWithPath: NSHomeDirectory()).appendingPathComponent("Library/Logs/TCATableApp.log").path
+            }
+        }()
+
+        // IDDLogLoadConfigFromPath(Bundle.main.path(forResource: "IDDLog", ofType: "plist"))
+        Log4swiftConfig.configureLogs(defaultLogFile: IDDLogLogFileName, lock: "IDDLogLock")
+        Log4swift[Self.self].info("Starting ...")
+    }
+    
     var body: some Scene {
         WindowGroup {
-            ContentView(store: AppState.liveStore)
+            ContentView(store: AppState.live)
         }
     }
 }

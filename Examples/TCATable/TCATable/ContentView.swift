@@ -61,24 +61,25 @@ struct ContentView: View {
                 ) {
                     TableColumn("File Size in Bytes", alignment: .trailing, sortDescriptor: .init(\File.physicalSize)) { rowValue in
                         Text(rowValue.logicalSize.decimalFormatted)
-                            .frame(alignment: .trailing)
                             .font(.subheadline)
                     }
                     .frame(width: 130)
                     TableColumn("On Disk", alignment: .trailing, sortDescriptor: .init(\File.logicalSize)) { rowValue in
                         Text(rowValue.physicalSize.compactFormatted)
-                            .frame(alignment: .trailing)
                             .font(.subheadline)
                     }
-                    .frame(width: 80)
+                    .frame(width: 70)
                     TableColumn("", alignment: .leading, sortDescriptor: .init(\File.self)) { rowValue in
                         HStack {
                             Image(systemName: "magnifyingglass.circle.fill")
+                                .renderingMode(.template)
                                 .resizable()
-                                .frame(width: 12, height: 12)
-                                .foregroundColor(Color.secondary)
+                                .frame(width: 12, height: 12, alignment: .center)
+//                                .foregroundColor(Color.secondary)
+//                                .foregroundColor(Color(.systemPink))
                                 .font(.subheadline)
                                 .padding(.horizontal, 4)
+                                .frame(width: 20)
                             //    .onTapGesture {
                             //        // this blocks the row selection ... WTF apple
                             //        Log4swift[Self.self].info("revealInFinder: \(file.filePath)")
@@ -89,26 +90,24 @@ struct ContentView: View {
                     TableColumn("Last Modified", alignment: .leading, sortDescriptor: .init(\File.modificationDate)) { rowValue in
                         Text(File.lastModified.string(from: rowValue.modificationDate))
                             .lineLimit(1)
-                            .frame(alignment: .trailing)
                             .font(.subheadline)
                     }
                     .frame(width: 160)
                     TableColumn("File Name", alignment: .leading, sortDescriptor: .init(\File.fileName)) { rowValue in
                         Text(rowValue.fileName)
                             .lineLimit(1)
-                            .frame(alignment: .trailing)
                             .font(.subheadline)
                     }
+                    .frame(width: 160)
                     TableColumn("File Path", alignment: .leading, sortDescriptor: .init(\File.filePath)) { rowValue in
                         Text(rowValue.filePath)
                             .lineLimit(1)
-                            .frame(alignment: .trailing)
                             .font(.subheadline)
                     }
                     .frame(minWidth: 180, maxWidth: .infinity)
                 }
             }
-            .frame(maxWidth: 1280, minHeight: 480, maxHeight: 800)
+            .frame(minWidth: 820, maxWidth: 1280, minHeight: 480, maxHeight: 800)
             .onAppear(perform: { viewStore.send(.appDidStart) })
         }
     }
@@ -116,6 +115,11 @@ struct ContentView: View {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView(store: AppState.mockupStore)
+        ContentView(store: AppState.mock)
+            .background(Color(NSColor.windowBackgroundColor))
+            .environment(\.colorScheme, .light)
+        ContentView(store: AppState.mock)
+            .background(Color(NSColor.windowBackgroundColor))
+            .environment(\.colorScheme, .dark)
     }
 }

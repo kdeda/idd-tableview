@@ -8,9 +8,10 @@
 
 import AppKit
 import SwiftUI
+import Log4swift
 
 /// Models a particular TableView column
-public struct TableColumn<RowValue>: Identifiable where RowValue: Equatable {
+public struct TableColumn<RowValue, Content>: Identifiable where RowValue: Equatable, Content: View {
     public var id = UUID()
     public var title = ""
     public var width: CGFloat = 100
@@ -18,9 +19,12 @@ public struct TableColumn<RowValue>: Identifiable where RowValue: Equatable {
     public var minWidth: CGFloat = 100
     public var alignment: Alignment = .leading
     public var sortDescriptor: TableColumnSort<RowValue>
-    private var content: (RowValue) -> AnyView
-
-    public init<Content: View>(
+    public var textColor: Color?
+    // We have to type erase the return of the cell view,
+    // otherwise we need to introduce another generic and things get a bit crazy ...
+    private var content: (RowValue) -> Content
+    
+    public init(
         _ title: String,
         alignment: Alignment = .leading,
         sortDescriptor: TableColumnSort<RowValue>,
@@ -29,14 +33,22 @@ public struct TableColumn<RowValue>: Identifiable where RowValue: Equatable {
         self.title = title
         self.alignment = alignment
         self.sortDescriptor = sortDescriptor
-        self.content = { rowValue in
-            AnyView(content(rowValue))
-        }
+        self.content = content
     }
     
     @ViewBuilder
-    public func createCellView(_ rowValue: RowValue) -> some View {
+    public func createColumnView(_ rowValue: RowValue) -> some View {
         content(rowValue)
+//        Text("123456")
+//            .environment(\.font, .headline)
+//            .foregroundColor(Color.yellow)
+//        AnyView(
+//            Text("123456")
+//                .environment(\.font, .headline)
+//                .foregroundColor(Color.yellow)
+//        )
+//        content(rowValue)
+//        // .debug()
     }
 
     public var iconName: String {
@@ -70,6 +82,14 @@ public struct TableColumn<RowValue>: Identifiable where RowValue: Equatable {
         rv.sortDescriptor = sortDescriptor
         return rv
     }
+
+    /// We just want to mutate the textColor
+    public func textColor(_ textColor: Color?) -> Self {
+        var rv = self
+        
+        rv.textColor = textColor
+        return rv
+    }
 }
 
 extension Array where Element: Identifiable {
@@ -84,7 +104,7 @@ extension Array where Element: Identifiable {
 /// https://forums.swift.org/t/extension-on-array-where-element-is-generic-type/10225/3
 ///
 extension Array {
-    func updateSortDescriptors<RowValue>(_ sortDescriptors: [TableColumnSort<RowValue>]) -> [TableColumn<RowValue>] {
+    func updateSortDescriptors<RowValue, Content>(_ sortDescriptors: [TableColumnSort<RowValue>]) -> [TableColumn<RowValue, Content>] {
         // preserve the state of the column sort
         // the truth comes from sortDescriptors
         // each column should reflect that value, by keyPath
@@ -92,8 +112,8 @@ extension Array {
         // than we copy the truth into the column
         // this assures the view's initial render to perfectly match the state
         // as the column are sorted up or down, the values will be pushed back into the sortDescriptors binding
-        let columns = self.compactMap { column -> TableColumn<RowValue>? in
-            if let column = column as? TableColumn<RowValue> {
+        let columns = self.compactMap { column -> TableColumn<RowValue, Content>? in
+            if let column = column as? TableColumn<RowValue, Content> {
                 if let truth = sortDescriptors.first(where: { $0.value == column.sortDescriptor.value  }) {
                     return column.updateSortDescriptor(truth)
                 }

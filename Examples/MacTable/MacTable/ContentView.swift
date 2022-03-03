@@ -78,12 +78,11 @@ struct ContentView: View {
             ) {
                 TableColumn("Year", alignment: .trailing, sortDescriptor: .init(\Car.year)) { rowValue in
                     Text("\(rowValue.year)")
-                        .frame(alignment: .trailing)
+                        .textColor(.yellow)
                 }
                 .frame(width: 130)
                 TableColumn("Make", alignment: .trailing, sortDescriptor: .init(\Car.make)) { rowValue in
                     Text(rowValue.make)
-                        .frame(alignment: .trailing)
                 }
                 .frame(width: 80)
                 TableColumn("", alignment: .leading, sortDescriptor: .init(\Car.self)) { rowValue in
@@ -92,30 +91,34 @@ struct ContentView: View {
                 .frame(width: 20)
                 TableColumn("Model", alignment: .leading, sortDescriptor: .init(\Car.model)) { rowValue in
                     Text(rowValue.model)
-                        .frame(alignment: .trailing)
                 }
                 .frame(width: 120)
                 if showExtraColumn {
                     TableColumn("Extra", alignment: .leading, sortDescriptor: .init(\Car.extraColumn)) { rowValue in
                         Text(rowValue.extraColumn)
-                            .frame(alignment: .trailing)
                     }
                     .frame(minWidth: 120, maxWidth: .infinity)
                 }
                 TableColumn("Category", alignment: .leading, sortDescriptor: .init(\Car.category)) { rowValue in
                     Text(rowValue.category)
-                        .frame(alignment: .trailing)
                 }
                 .frame(minWidth: 180, maxWidth: .infinity)
             }
             .id(showExtraColumn ? "showExtraColumn=true" : "showExtraColumn=false")
+            .environment(\.font, .headline)
         }
         .frame(maxWidth: 1280, minHeight: 480, maxHeight: 800)
+        // .debug()
     }
 }
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
+            .background(Color(NSColor.windowBackgroundColor))
+            .environment(\.colorScheme, .light)
+        ContentView()
+            .background(Color(NSColor.windowBackgroundColor))
+            .environment(\.colorScheme, .dark)
     }
 }

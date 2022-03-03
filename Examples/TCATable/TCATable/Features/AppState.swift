@@ -42,17 +42,58 @@ enum AppAction: BindableAction, Equatable {
     case sortFiles(TableColumnSort<File>)
 }
 
+struct FileClient {
+    /// Given a url, return all files under it
+    let fetchFiles: (_ url: URL) -> AnyPublisher<[File], Never>
+}
+
+extension FileClient {
+    static var live: Self {
+        return Self(
+            fetchFiles: { url in
+                let rv = Deferred { Just(url) }
+                    .map(\.contentsOfDirectory)
+                    .map { $0.map(File.init) }
+                    .eraseToAnyPublisher()
+                return rv
+            }
+        )
+    }
+}
+
+extension FileClient {
+    static var mock: Self {
+        return Self(
+            fetchFiles: { url in
+                 let logFileURLs: [URL] = {
+                    let root = URL.iddHomeDirectory.appendingPathComponent("Library/Logs")
+                    let filePaths = FileManager.default.subpaths(atPath: root.path) ?? []
+                    let logURLs = filePaths
+                        .map(root.appendingPathComponent)
+                        .filter { $0.pathExtension == "log" }
+                    
+                    let lowerRange = max(0, logURLs.count - 3)
+                    return Array(logURLs[lowerRange..<logURLs.count])
+                }()
+                
+                let files = logFileURLs
+                    .map(\.path)
+                    .map(URL.init(fileURLWithPath:))
+                // This will cause the URLs to reload fresh and thus produce the latest info, such as logicalSize or modificationDate
+                    .map(File.init)
+
+                // there should be at most 3 items here ...
+                return Just(files)
+                    .eraseToAnyPublisher()
+            }
+        )
+    }
+}
+
 struct AppEnvironment {
     var mainQueue: AnySchedulerOf<DispatchQueue>
     var uuid: () -> UUID
-    
-    func fetchFiles(_ url: URL) -> AnyPublisher<[File], Never> {
-        let rv = Deferred { Just(url) }
-            .map(\.contentsOfDirectory)
-            .map { $0.map(File.init) }
-            .eraseToAnyPublisher()
-        return rv
-    }
+    var fileClient: FileClient
 }
 
 extension AppState {
@@ -82,7 +123,9 @@ extension AppState {
                  Start fetching files under ~/Desktop ...
                  This works because we removed entitlements
                  */
-                let rv = environment.fetchFiles(URL.iddHomeDirectory.appendingPathComponent("Desktop"))
+                let rv = environment
+                    .fileClient
+                    .fetchFiles(URL.iddHomeDirectory.appendingPathComponent("Desktop"))
                     .delay(for: 1, scheduler: environment.mainQueue)
                     .eraseToEffect()
                     .map(AppAction.setFiles)
@@ -119,41 +162,24 @@ extension AppState {
 }
 
 extension AppState {
-    static let logFileURLs: [URL] = {
-        let root = URL.iddHomeDirectory.appendingPathComponent("Library/Logs")
-        let filePaths = FileManager.default.subpaths(atPath: root.path) ?? []
-        let logURLs = filePaths
-            .map(root.appendingPathComponent)
-            .filter { $0.pathExtension == "log" }
-        
-        let lowerRange = max(0, logURLs.count - 3)
-        return Array(logURLs[lowerRange..<logURLs.count])
-    }()
-
-    /// This will cause the URLs to reload and thus produce the latest info, such as logicalSize or modificationDate
-    static var logFiles: [File] {
-        logFileURLs.map(\.path).map(URL.init(fileURLWithPath:)).map(File.init)
-    }
-
-    static let liveStore = Store<AppState, AppAction>(
+    static let live = Store<AppState, AppAction>(
         initialState: .init(),
         reducer: reducer,
         environment: AppEnvironment(
             mainQueue: DispatchQueue.main.eraseToAnyScheduler(),
-            uuid: UUID.init
+            uuid: UUID.init,
+            fileClient: FileClient.live
         )
     )
     
-    static let mockupStore = {
+    static let mock = {
         Store<AppState, AppAction>(
-            initialState: .init(
-                files: logFiles,
-                selectedFiles: Set([logFiles[0].id])
-            ),
+            initialState: .init(),
             reducer: reducer,
             environment: AppEnvironment(
                 mainQueue: DispatchQueue.main.eraseToAnyScheduler(),
-                uuid: UUID.init
+                uuid: UUID.init,
+                fileClient: FileClient.mock
             )
         )
     }()
