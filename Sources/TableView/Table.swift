@@ -76,7 +76,7 @@ struct RowValueIndexPreferenceKey<RowValue>: PreferenceKey where RowValue: Ident
 /// https://dev.to/hugh_jeremy/adding-an-nstableview-to-a-swiftui-view-212p
 /// https://swiftui-lab.com/a-powerful-combo/
 /// https://stackoverflow.com/questions/68462035/is-there-a-better-way-to-create-a-multi-column-data-table-list-view-in-swiftui
-public struct Table<RowValue, Content>: View where RowValue: Identifiable, RowValue: Hashable, Content: View {
+public struct Table<RowValue>: View where RowValue: Identifiable, RowValue: Hashable {
 
     enum SelectionType {
         case single
@@ -92,7 +92,7 @@ public struct Table<RowValue, Content>: View where RowValue: Identifiable, RowVa
     @Binding private var singleSelection: RowValue.ID?
     @Binding private var multipleSelection: Set<RowValue.ID>
     @Binding private var sortDescriptors: [TableColumnSort<RowValue>]
-    @State private var columns: [TableColumn<RowValue, Content>] = []
+    @State private var columns: [TableColumn<RowValue>] = []
     @State private var rowIndex: [RowValueIndex<RowValue>] = []
     @State private var draggedRows: [RowValue.ID: DraggedRowValue] = [:]
 
@@ -100,7 +100,7 @@ public struct Table<RowValue, Content>: View where RowValue: Identifiable, RowVa
         _ rows: Array<RowValue>,
         singleSelection: Binding<RowValue.ID?>,
         sortDescriptors: Binding<[TableColumnSort<RowValue>]>,
-        @TableColumnBuilder columns: @escaping () -> [TableColumn<RowValue, Content>]
+        @TableColumnBuilder columns: @escaping () -> [TableColumn<RowValue>]
     ) {
         self.rows = rows
         self.selectionType = .single
@@ -108,7 +108,7 @@ public struct Table<RowValue, Content>: View where RowValue: Identifiable, RowVa
         self._multipleSelection = .constant(Set())
         self._sortDescriptors = sortDescriptors
         
-        let columns = columns() // .updateSortDescriptors(sortDescriptors.wrappedValue)
+        let columns = columns().updateSortDescriptors(sortDescriptors.wrappedValue)
         self._columns = State(initialValue: columns)
         Log4swift[Self.self].info("columns: \(self.columns.count)")
     }
@@ -117,7 +117,7 @@ public struct Table<RowValue, Content>: View where RowValue: Identifiable, RowVa
         _ rows: Array<RowValue>,
         multipleSelection: Binding<Set<RowValue.ID>>,
         sortDescriptors: Binding<[TableColumnSort<RowValue>]>,
-        @TableColumnBuilder columns: @escaping () -> [TableColumn<RowValue, Content>]
+        @TableColumnBuilder columns: @escaping () -> [TableColumn<RowValue>]
     ) {
         self.rows = rows
         self.selectionType = .multiple
@@ -125,7 +125,7 @@ public struct Table<RowValue, Content>: View where RowValue: Identifiable, RowVa
         self._multipleSelection = multipleSelection
         self._sortDescriptors = sortDescriptors
 
-        let columns = columns() // .updateSortDescriptors(sortDescriptors.wrappedValue)
+        let columns = columns().updateSortDescriptors(sortDescriptors.wrappedValue)
         self._columns = State(initialValue: columns)
         Log4swift[Self.self].info("columns: \(self.columns.count)")
     }
@@ -161,21 +161,11 @@ public struct Table<RowValue, Content>: View where RowValue: Identifiable, RowVa
     fileprivate func rowView(_ rowValue: RowValue) -> some View {
         HStack(alignment: .center, spacing: 6) {
             ForEach(columns) { column in
-                TableViewColumnView(title: column.title, isSelected: isSelectedRowID(rowValue.id)) {
+                TableViewColumnView(title: column.title, isSelected: isSelectedRowID(rowValue.id), textColor: column.textColor) {
                     column.createColumnView(rowValue)
                         .frame(minWidth: column.minWidth, maxWidth: column.maxWidth, alignment: column.alignment)
-                        .textColor(.yellow)
-
-                    // .environment(\.font, .headline)
-                    // .foregroundColor(Color.yellow)
                 }
-                .debug()
-                // .foregroundColor(title: column.title, isSelected: isSelectedRowID(rowValue.id))
-                    // .foregroundColor(isSelectedRowID(rowValue.id) ? Color.white : column.textColor)
-//                DumpingEnvironment() {
-//                    column.createCellView(rowValue)
-//                        .frame(minWidth: column.minWidth, maxWidth: column.maxWidth, alignment: column.alignment)
-//                }
+                // .debug()
                 if !columns.isLastColumn(column) {
                     Divider()
                 }
@@ -364,11 +354,8 @@ struct TablePreview: View {
             .frame(width: 130)
             TableColumn("Last Name", alignment: .trailing, sortDescriptor: .init(\Person.lastName)) { rowValue in
                 Text(rowValue.lastName)
+                    .textColor(Color.red)
             }
-            // TODO: kdeda
-            // These should be lifted out of here and into the inside of the TableColumn
-            // it's a bit counter intuitive to understand that the color should be defined here
-            .textColor(Color.red)
             .frame(width: 80)
             TableColumn("", alignment: .leading, sortDescriptor: .init(\Person.self)) { rowValue in
                 Text("")
@@ -424,19 +411,20 @@ extension View {
 }
 
 fileprivate struct TableViewColumnView<Content>: View where Content: View {
-    @State private var textColor: Color?
     var title: String
     var isSelected: Bool
+    @State private var textColor: Color?
     private let content: () -> Content
 
-    public init(title: String, isSelected: Bool, @ViewBuilder content: @escaping () -> Content) {
+    public init(title: String, isSelected: Bool, textColor: Color?, @ViewBuilder content: @escaping () -> Content) {
         self.title = title
         self.isSelected = isSelected
+        self.textColor = textColor
         self.content = content
     }
     
     var body: some View {
-        Log4swift[Self.self].info("column: '\(title)' isSelected: '\(isSelected)' textColor: '\(textColor)'")
+        // Log4swift[Self.self].info("column: '\(title)' isSelected: '\(isSelected)' textColor: '\(textColor)'")
         return content()
             .foregroundColor(isSelected ? Color.white : textColor)
             .onPreferenceChange(ForegroundColorPreferenceKey.self) { textColor in

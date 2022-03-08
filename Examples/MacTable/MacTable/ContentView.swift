@@ -78,7 +78,7 @@ struct ContentView: View {
             ) {
                 TableColumn("Year", alignment: .trailing, sortDescriptor: .init(\Car.year)) { rowValue in
                     Text("\(rowValue.year)")
-                        .textColor(.yellow)
+                        .textColor(.secondary)
                 }
                 .frame(width: 130)
                 TableColumn("Make", alignment: .trailing, sortDescriptor: .init(\Car.make)) { rowValue in
@@ -92,6 +92,7 @@ struct ContentView: View {
                 TableColumn("Model", alignment: .leading, sortDescriptor: .init(\Car.model)) { rowValue in
                     Text(rowValue.model)
                 }
+                .textColor(Color.yellow)
                 .frame(width: 120)
                 if showExtraColumn {
                     TableColumn("Extra", alignment: .leading, sortDescriptor: .init(\Car.extraColumn)) { rowValue in
@@ -105,7 +106,6 @@ struct ContentView: View {
                 .frame(minWidth: 180, maxWidth: .infinity)
             }
             .id(showExtraColumn ? "showExtraColumn=true" : "showExtraColumn=false")
-            .environment(\.font, .headline)
         }
         .frame(maxWidth: 1280, minHeight: 480, maxHeight: 800)
         // .debug()
