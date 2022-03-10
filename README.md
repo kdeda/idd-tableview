@@ -2,7 +2,8 @@
 
 This is a custom made TableView that does not depend on List and supports macOS 11 and above.
 
-It will render 100k rows in a second. Take that SwiftUI.List
+It is able to handle a giant amount of rows, 500k with no problem. Take that SwiftUI.List
+However we have discovered that Array<V>.sort(by: keyPath) is 6 to 7 time slower than using pure functions
 
 There are 2 example target in the package. 
 

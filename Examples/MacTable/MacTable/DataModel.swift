@@ -66,13 +66,13 @@ struct Store {
         do {
             let data = try Data(contentsOf: url)
             let result = try decoder.decode(Result.self, from: data)
-            var initialArray = result.results
+            let initialArray = result.results
             
             let rv = (0 ..< 1).reduce(into: [Car]()) { partialResult, nextItem in
                 let newValues: [Car] = initialArray.map { car in
-                    var newCar = car
-                    newCar.id = car.id + "\(nextItem)"
-                    return newCar
+                    var newCopy = car
+                    newCopy.id = car.id + "\(nextItem)"
+                    return newCopy
                 }
                 partialResult.append(contentsOf: newValues)
             }

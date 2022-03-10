@@ -11,20 +11,20 @@ import Combine
 import ComposableArchitecture
 import Log4swift
 import TableView
+import SwiftUI
 
 /// This is the state for the TableView
 struct AppState: Equatable, Identifiable {
-    let id = UUID()
+    var id = UUID()
     var isAppReady = false
     var files: [File] = []
     @BindableState var selectedFiles: Set<File.ID> = []
     @BindableState var sortDescriptors: [TableColumnSort<File>] = [
-        .init(\.physicalSize)
-    ]
-    
-    // To support the pure Table from macOS 12
-    @BindableState var sortOrder: [TableColumnSort<File>] = [
-        .init(\.physicalSize)
+        .init(
+            compare: { $0.physicalSize < $1.physicalSize },
+            ascending: true,
+            columnIndex: 0 // this needs to match to the column index
+        )
     ]
 }
 
@@ -54,6 +54,25 @@ extension FileClient {
                 let rv = Deferred { Just(url) }
                     .map(\.contentsOfDirectory)
                     .map { $0.map(File.init) }
+                    .map { files -> [File] in
+                        let fileCount = files.count
+                        let desiredFinalCount = 100_000 // this is how much we want to end up with
+                        // as we increase this number things start to lag ...
+                        let multiplier = 1 + desiredFinalCount / fileCount
+
+                        // multiply the initial array by x to generate more value for performance testing
+                        let rv = (0 ..< multiplier).reduce(into: [File]()) { partialResult, nextItem in
+                            let newValues: [File] = files.map { file in
+                                var newCopy = file
+                                newCopy.filePath = file.id + "\(nextItem)"
+                                newCopy.logicalSize += newCopy.logicalSize * Int64(nextItem)
+                                newCopy.physicalSize += newCopy.physicalSize * Int64(nextItem)
+                                return newCopy
+                            }
+                            partialResult.append(contentsOf: newValues)
+                        }
+                        return rv
+                    }
                     .eraseToAnyPublisher()
                 return rv
             }
@@ -101,17 +120,13 @@ extension AppState {
         Reducer { state, action, environment in
             switch action {
             case .binding(\.$selectedFiles):
-                let files = state.files.filter { state.selectedFiles.contains($0.id) }
-                return Effect(value: .selectedFilesDidChange(files))
+                Log4swift[Self.self].info("selectedFiles: '\(state.selectedFiles.count)'")
+//                let files = state.files.filter { state.selectedFiles.contains($0.id) }
+//                return Effect(value: .selectedFilesDidChange(files))
+                return .none
 
             case .binding(\.$sortDescriptors):
                 return Effect(value: .sortFiles(state.sortDescriptors[0]))
-                
-            case .binding(\.$sortOrder):
-                let sortDescriptor = state.sortDescriptors[0]
-                let files = state.files.sorted(by: sortDescriptor.comparator)
-                state.files = files
-                return .none
 
             case .binding:
                 return .none
@@ -125,7 +140,7 @@ extension AppState {
                  */
                 let rv = environment
                     .fileClient
-                    .fetchFiles(URL.iddHomeDirectory.appendingPathComponent("Desktop"))
+                    .fetchFiles(URL(fileURLWithPath: NSHomeDirectory()))
                     .delay(for: 1, scheduler: environment.mainQueue)
                     .eraseToEffect()
                     .map(AppAction.setFiles)
@@ -150,9 +165,32 @@ extension AppState {
                 return .none
                 
             case let .sortFiles(sortDescriptor):
+                var startDate = Date()
                 Log4swift[Self.self].info("sortDescriptor.ascending: '\(sortDescriptor.ascending)'")
+
+//                var files = state.files
+//                files.sort(by: { lhs, rhs in
+//                    lhs.physicalSize < rhs.physicalSize
+//                })
+//                // 1.98 seconds first time, .155 after ...
+//                Log4swift[Self.self].info("sortFiles: '\(state.files.count) nodes' in: '\(startDate.elapsedTime) ms'")
+//
+                startDate = Date()
+                var files2 = state.files
+                files2.sort(by: { lhs, rhs in
+                    let left = lhs[keyPath: \.physicalSize]
+                    let right = rhs[keyPath: \.physicalSize]
+                    return left < right
+                })
+                // 2.05 seconds first time, .155 after ...
+                // so key path sorting is slightly slower
+                Log4swift[Self.self].info("sortFiles: '\(state.files.count) nodes' in: '\(startDate.elapsedTime) ms'")
                 
-                state.files = state.files.sorted(by: sortDescriptor.comparator)
+                startDate = Date()
+                state.files.sort(by: sortDescriptor.comparator)
+                // 12 seconds first time, 1.5 after ...
+                Log4swift[Self.self].info("sortFiles: '\(state.files.count) nodes' in: '\(startDate.elapsedTime) ms'")
+                
                 return .none
             }
         }

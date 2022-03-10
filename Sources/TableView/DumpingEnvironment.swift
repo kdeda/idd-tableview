@@ -93,8 +93,7 @@ struct DumpingEnvironment<Content>: View where Content: View {
                 && element.key != "WindowsControllerKey"
             }
         let view = content()
-        let viewDescription = "\(view)"
-        
+//        let viewDescription = "\(view)"
 //        if viewDescription.range(of: "minWidth: Optional(80.0") != nil {
 //            Log4swift["DumpingEnvironment"].info("--------------------------------------")
 //            Log4swift["DumpingEnvironment"].info("\(debugString)")
@@ -102,5 +101,18 @@ struct DumpingEnvironment<Content>: View where Content: View {
 //            Log4swift["DumpingEnvironment"].info("")
 //        }
         return view
+    }
+}
+
+extension View {
+    public func debug() -> Self {
+        let mirror = Mirror(reflecting: self)
+        let children = mirror.children
+        
+        Log4swift["View.debug"].info("\(mirror.subjectType)")
+        children.forEach { child in
+            Log4swift["View.debug"].info("\(child)")
+        }
+        return self
     }
 }

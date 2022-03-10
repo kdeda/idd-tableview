@@ -59,24 +59,27 @@ struct ContentView: View {
                     multipleSelection: viewStore.binding(\.$selectedFiles),
                     sortDescriptors: viewStore.binding(\.$sortDescriptors)
                 ) {
-                    TableColumn("File Size in Bytes", alignment: .trailing, sortDescriptor: .init(\File.physicalSize)) { rowValue in
-                        Text(rowValue.logicalSize.decimalFormatted)
+                    TableColumn("File Size in Bytes", alignment: .trailing) { rowValue in
+                        Text(rowValue.physicalSize.decimalFormatted)
                             .font(.subheadline)
                     }
                     .frame(width: 130)
-                    TableColumn("On Disk", alignment: .trailing, sortDescriptor: .init(\File.logicalSize)) { rowValue in
-                        Text(rowValue.physicalSize.compactFormatted)
+                    .sortDescriptor(compare: { $0.physicalSize < $1.physicalSize })
+
+                    TableColumn("On Disk", alignment: .trailing) { rowValue in
+                        Text(rowValue.logicalSize.compactFormatted)
                             .font(.subheadline)
                     }
                     .frame(width: 70)
-                    TableColumn("", alignment: .leading, sortDescriptor: .init(\File.self)) { rowValue in
+                    .sortDescriptor(compare: { $0.logicalSize < $1.logicalSize })
+
+                    TableColumn("", alignment: .leading) { rowValue in
                         HStack {
                             Image(systemName: "magnifyingglass.circle.fill")
                                 .renderingMode(.template)
                                 .resizable()
                                 .frame(width: 12, height: 12, alignment: .center)
-//                                .foregroundColor(Color.secondary)
-//                                .foregroundColor(Color(.systemPink))
+                                .textColor(Color.pink)
                                 .font(.subheadline)
                                 .padding(.horizontal, 4)
                                 .frame(width: 20)
@@ -87,24 +90,38 @@ struct ContentView: View {
                         }
                     }
                     .frame(width: 20)
-                    TableColumn("Last Modified", alignment: .leading, sortDescriptor: .init(\File.modificationDate)) { rowValue in
+
+                    TableColumn("Last Modified", alignment: .leading) { rowValue in
                         Text(File.lastModified.string(from: rowValue.modificationDate))
                             .lineLimit(1)
                             .font(.subheadline)
                     }
                     .frame(width: 160)
-                    TableColumn("File Name", alignment: .leading, sortDescriptor: .init(\File.fileName)) { rowValue in
+                    .sortDescriptor(compare: { $0.modificationDate < $1.modificationDate })
+
+                    TableColumn("File Name", alignment: .leading) { rowValue in
                         Text(rowValue.fileName)
                             .lineLimit(1)
                             .font(.subheadline)
                     }
                     .frame(width: 160)
-                    TableColumn("File Path", alignment: .leading, sortDescriptor: .init(\File.filePath)) { rowValue in
+                    .sortDescriptor(compare: { $0.fileName < $1.fileName })
+
+                    TableColumn("File Path", alignment: .leading) { rowValue in
                         Text(rowValue.filePath)
                             .lineLimit(1)
                             .font(.subheadline)
                     }
                     .frame(minWidth: 180, maxWidth: .infinity)
+                    .sortDescriptor(compare: { $0.filePath < $1.filePath })
+                }
+                Divider()
+                HStack {
+                    Spacer()
+                    Text("displaying \(viewStore.files.count) files and \(viewStore.selectedFiles.count) selected files")
+                        .lineLimit(1)
+                        .font(.subheadline)
+                        .padding(.all, 8)
                 }
             }
             .frame(minWidth: 820, maxWidth: 1280, minHeight: 480, maxHeight: 800)

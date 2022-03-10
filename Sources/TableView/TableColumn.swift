@@ -16,11 +16,24 @@ public struct TableColumn<RowValue>: Identifiable where RowValue: Equatable {
     public var width: CGFloat = 100
     public var maxWidth: CGFloat = 100
     public var minWidth: CGFloat = 100
-    public var alignment: Alignment = .leading
-    public var sortDescriptor: TableColumnSort<RowValue>
+    var alignment: Alignment = .leading
+    var sortDescriptor: TableColumnSort<RowValue> = .init(compare: { _, _ in false })
     var textColor: Color?
     private var content: (RowValue) -> AnyView
 
+    public init<Content: View>(
+        _ title: String,
+        alignment: Alignment = .leading,
+        @ViewBuilder content: @escaping (RowValue) -> Content
+    ) {
+        self.title = title
+        self.alignment = alignment
+        self.content = { rowValue in
+            AnyView(content(rowValue))
+        }
+    }
+    
+    @available(*, deprecated, renamed: "init(_:alignment:content:)")
     public init<Content: View>(
         _ title: String,
         alignment: Alignment = .leading,
@@ -34,7 +47,7 @@ public struct TableColumn<RowValue>: Identifiable where RowValue: Equatable {
             AnyView(content(rowValue))
         }
     }
-    
+
     @ViewBuilder
     public func createColumnView(_ rowValue: RowValue) -> some View {
         content(rowValue)
@@ -65,11 +78,26 @@ public struct TableColumn<RowValue>: Identifiable where RowValue: Equatable {
     }
     
     /// We just want to mutate the sortDescriptor
-    public func updateSortDescriptor(_ sortDescriptor: TableColumnSort<RowValue>) -> Self {
+    public func sortDescriptor(_ sortDescriptor: TableColumnSort<RowValue>) -> Self {
         var rv = self
         
         rv.sortDescriptor = sortDescriptor
         return rv
+    }
+    
+    /// Convenience setter
+    /// We just want to mutate the sortDescriptor
+    public func sortDescriptor(
+        compare: @escaping TableColumnSortCompare<RowValue>,
+        ascending: Bool = false
+    ) -> Self {
+        // the columnIndex will be updated later during updateSortDescriptors
+        // and it will match the index for this column
+        sortDescriptor(TableColumnSort<RowValue>.init(
+            compare: compare,
+            ascending: ascending,
+            columnIndex: 0
+        ))
     }
     
     /// We just want to mutate the column textColor
@@ -102,15 +130,26 @@ extension Array {
         // than we copy the truth into the column
         // this assures the view's initial render to perfectly match the state
         // as the column are sorted up or down, the values will be pushed back into the sortDescriptors binding
-        let columns = self.compactMap { column -> TableColumn<RowValue>? in
-            if let column = column as? TableColumn<RowValue> {
-                if let truth = sortDescriptors.first(where: { $0.value == column.sortDescriptor.value  }) {
-                    return column.updateSortDescriptor(truth)
+        //
+        let columns = self
+            .compactMap { $0 as? TableColumn<RowValue> } // convert to honest array of TableColumnSort
+            .enumerated()
+            .map { (index, column) -> TableColumn<RowValue> in
+                // make sure each column sort index matches the column index
+                //
+                var newColumn = column
+                newColumn.sortDescriptor.columnIndex = index
+                return newColumn
+            }
+            .map { column -> TableColumn<RowValue> in
+                // make sure a given column's initial sort matches the one that came from the state
+                // this way you can have a column sort, pre selected upon load
+                //
+                if let truth = sortDescriptors.first(where: { $0.columnIndex == column.sortDescriptor.columnIndex }) {
+                    return column.sortDescriptor(truth)
                 }
                 return column
             }
-            return nil
-        }
         
         return columns
     }

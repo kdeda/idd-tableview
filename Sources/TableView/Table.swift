@@ -77,7 +77,6 @@ struct RowValueIndexPreferenceKey<RowValue>: PreferenceKey where RowValue: Ident
 /// https://swiftui-lab.com/a-powerful-combo/
 /// https://stackoverflow.com/questions/68462035/is-there-a-better-way-to-create-a-multi-column-data-table-list-view-in-swiftui
 public struct Table<RowValue>: View where RowValue: Identifiable, RowValue: Hashable {
-
     enum SelectionType {
         case single
         case multiple
@@ -95,12 +94,12 @@ public struct Table<RowValue>: View where RowValue: Identifiable, RowValue: Hash
     @State private var columns: [TableColumn<RowValue>] = []
     @State private var rowIndex: [RowValueIndex<RowValue>] = []
     @State private var draggedRows: [RowValue.ID: DraggedRowValue] = [:]
-
+    
     public init(
         _ rows: Array<RowValue>,
         singleSelection: Binding<RowValue.ID?>,
         sortDescriptors: Binding<[TableColumnSort<RowValue>]>,
-        @TableColumnBuilder columns: @escaping () -> [TableColumn<RowValue>]
+        @TableColumnBuilder<RowValue> columns: @escaping () -> [TableColumn<RowValue>]
     ) {
         self.rows = rows
         self.selectionType = .single
@@ -108,16 +107,16 @@ public struct Table<RowValue>: View where RowValue: Identifiable, RowValue: Hash
         self._multipleSelection = .constant(Set())
         self._sortDescriptors = sortDescriptors
         
-        let columns = columns().updateSortDescriptors(sortDescriptors.wrappedValue)
-        self._columns = State(initialValue: columns)
+        let updatedColumns = columns().updateSortDescriptors(sortDescriptors.wrappedValue)
+        self._columns = State(initialValue: updatedColumns)
         Log4swift[Self.self].info("columns: \(self.columns.count)")
     }
-
+    
     public init(
         _ rows: Array<RowValue>,
         multipleSelection: Binding<Set<RowValue.ID>>,
         sortDescriptors: Binding<[TableColumnSort<RowValue>]>,
-        @TableColumnBuilder columns: @escaping () -> [TableColumn<RowValue>]
+        @TableColumnBuilder<RowValue> columns: @escaping () -> [TableColumn<RowValue>]
     ) {
         self.rows = rows
         self.selectionType = .multiple
@@ -125,11 +124,11 @@ public struct Table<RowValue>: View where RowValue: Identifiable, RowValue: Hash
         self._multipleSelection = multipleSelection
         self._sortDescriptors = sortDescriptors
 
-        let columns = columns().updateSortDescriptors(sortDescriptors.wrappedValue)
-        self._columns = State(initialValue: columns)
+        let updatedColumns = columns().updateSortDescriptors(sortDescriptors.wrappedValue)
+        self._columns = State(initialValue: updatedColumns)
         Log4swift[Self.self].info("columns: \(self.columns.count)")
     }
-
+    
     private  func isSelectedRowID(_ rowID: RowValue.ID) -> Bool {
         switch selectionType {
         case .single: return singleSelection == rowID
@@ -143,7 +142,10 @@ public struct Table<RowValue>: View where RowValue: Identifiable, RowValue: Hash
         // Log4swift[Self.self].info("rowID: '\(rowID)'")
         switch selectionType {
         case .single: singleSelection = rowID
-        case .multiple: multipleSelection.insert(rowID)
+        case .multiple:
+            if !multipleSelection.contains(rowID) {
+                multipleSelection.insert(rowID)
+            }
         }
     }
     
@@ -153,7 +155,10 @@ public struct Table<RowValue>: View where RowValue: Identifiable, RowValue: Hash
         // Log4swift[Self.self].info("rowID: '\(rowID)'")
         switch selectionType {
         case .single: singleSelection = .none
-        case .multiple: multipleSelection.remove(rowID)
+        case .multiple:
+            if multipleSelection.contains(rowID) {
+                multipleSelection.remove(rowID)
+            }
         }
     }
     
@@ -161,7 +166,10 @@ public struct Table<RowValue>: View where RowValue: Identifiable, RowValue: Hash
     fileprivate func rowView(_ rowValue: RowValue) -> some View {
         HStack(alignment: .center, spacing: 6) {
             ForEach(columns) { column in
-                TableViewColumnView(title: column.title, isSelected: isSelectedRowID(rowValue.id), textColor: column.textColor) {
+                TableViewColumnView(
+                    isSelected: isSelectedRowID(rowValue.id),
+                    textColor: column.textColor
+                ) {
                     column.createColumnView(rowValue)
                         .frame(minWidth: column.minWidth, maxWidth: column.maxWidth, alignment: column.alignment)
                 }
@@ -243,39 +251,41 @@ public struct Table<RowValue>: View where RowValue: Identifiable, RowValue: Hash
                         return
                     }
                     
-                    let newScrollDirection: ScrollDirection = {
+                    let scrollDirection: ScrollDirection = {
                         if drag.location.y > drag.predictedEndLocation.y { return .up }
                         else if drag.location.y < drag.predictedEndLocation.y { return .down }
                         return .up
                     }()
                     
-                    // we want to replicate the existing logic in the TableView
+                    // we want to replicate the existing logic in the SwiftUI.List (NSTableView)
                     // use case:
-                    // if we are dragging down and than reverse direction to drag up
-                    // the selection is whiped and than back down the selection appears and so forth
+                    // if we are dragging down select rows as we drag mouse over them
+                    // if we reverse and drag up unselect all selected until an unselected row and than start selecting them
+                    // as we drag mouse up and down the selection toggles to follow the current mouse pointer
+                    // tricky
                     
                     if draggedRows.isEmpty {
-                        // it means we got here with no selection so that first selecting will be the anchor
+                        // it means we got here with no selection so this first direction will be the anchor
                         draggedRows[
                             row.id,
-                            default: DraggedRowValue(directions: [newScrollDirection, newScrollDirection])
-                        ].appendDirection(newScrollDirection)
+                            default: DraggedRowValue(directions: [scrollDirection])
+                        ].appendDirection(scrollDirection)
                     } else {
                         draggedRows[
                             row.id,
                             default: DraggedRowValue(directions: [])
-                        ].appendDirection(newScrollDirection)
+                        ].appendDirection(scrollDirection)
                     }
                     
                     // debug code ...
-                    //    draggedRows.forEach { element in
-                    //        Log4swift[Self.self].info("onChanged: isSelected: '\(element.value.isSelected)' directions: '\(element.value.directions.map(\.rawValue).joined(separator: ", "))' row.id: '\(element.key)'")
-                    //    }
-
+                    //                    draggedRows.forEach { element in
+                    //                        Log4swift[Self.self].info("onChanged: isSelected: '\(element.value.isSelected)' directions: '\(element.value.directions.map(\.rawValue).joined(separator: ", "))' row.id: '\(element.key)'")
+                    //                    }
+                    
                     draggedRows.forEach { element in
-                        !element.value.isSelected
-                        ? unselectRowID(element.key)
-                        :  selectRowID(element.key)
+                        element.value.isSelected
+                        ? selectRowID(element.key)
+                        : unselectRowID(element.key)
                     }
                 }
                 .onEnded { value in
@@ -330,9 +340,9 @@ struct TablePreview: View {
     @State var rows: [Person] = Person.testArray1
     @State var selection: Person.ID? = Person.testArray1[0].id
     @State private var sortDescriptors: [TableColumnSort<Person>] = [
-        .init(\.firstName)
+        .init(compare: { $0.firstName < $1.firstName }, ascending: true, columnIndex: 1)
     ]
-    
+
     var body: some View {
         TableView.Table(
             rows,
@@ -348,23 +358,29 @@ struct TablePreview: View {
                 }
             )
         ) {
-            TableColumn("First Name", alignment: .trailing, sortDescriptor: .init(\Person.firstName)) { rowValue in
+            TableColumn<Person>("First Name", alignment: .trailing) { rowValue in
                 Text(rowValue.firstName)
             }
             .frame(width: 130)
-            TableColumn("Last Name", alignment: .trailing, sortDescriptor: .init(\Person.lastName)) { rowValue in
+            .sortDescriptor(compare: { $0.firstName < $1.firstName })
+
+            TableColumn<Person>("Last Name", alignment: .trailing) { rowValue in
                 Text(rowValue.lastName)
                     .textColor(Color.red)
             }
             .frame(width: 80)
-            TableColumn("", alignment: .leading, sortDescriptor: .init(\Person.self)) { rowValue in
+            .sortDescriptor(compare: { $0.lastName < $1.lastName })
+
+            TableColumn<Person>("", alignment: .leading) { rowValue in
                 Text("")
             }
             .frame(width: 20)
-            TableColumn("Address", alignment: .leading, sortDescriptor: .init(\Person.address)) { rowValue in
+            
+            TableColumn<Person>("Address", alignment: .leading) { rowValue in
                 Text(rowValue.address)
             }
             .frame(minWidth: 180, maxWidth: .infinity)
+            .sortDescriptor(compare: { $0.address < $1.address })
         }
         .id(UUID())
     }
@@ -383,19 +399,6 @@ struct TablePreview_Previews: PreviewProvider {
     }
 }
 
-extension View {
-    public func debug() -> Self {
-        let mirror = Mirror(reflecting: self)
-        let children = mirror.children
-        
-        Log4swift["View.debug"].info("\(mirror.subjectType)")
-        children.forEach { child in
-            Log4swift["View.debug"].info("\(child)")
-        }
-        return self
-    }
-}
-
 struct ForegroundColorPreferenceKey: PreferenceKey {
     static var defaultValue: Color = .clear
 
@@ -410,13 +413,21 @@ extension View {
     }
 }
 
+/// Internal type so we can swing the ForegroundColorPreferenceKey
+/// 
 fileprivate struct TableViewColumnView<Content>: View where Content: View {
+    /// this got introduced for debuging
     var title: String
     var isSelected: Bool
     @State private var textColor: Color?
     private let content: () -> Content
 
-    public init(title: String, isSelected: Bool, textColor: Color?, @ViewBuilder content: @escaping () -> Content) {
+    public init(
+        title: String = "",
+        isSelected: Bool,
+        textColor: Color?,
+        @ViewBuilder content: @escaping () -> Content
+    ) {
         self.title = title
         self.isSelected = isSelected
         self.textColor = textColor

@@ -8,13 +8,18 @@
 
 import SwiftUI
 import TableView
+import Log4swift
 
 struct ContentView: View {
     var cars = Store.cars
     @State var rows = Store.cars
     @State var selection: Car.ID?
     @State var sortDescriptors: [TableColumnSort<Car>] = [
-        .init(\.make)
+        .init(
+            compare: { $0.year < $1.year },
+            ascending: true,
+            columnIndex: 0 // this needs to match to the column index
+        )
     ]
     @State var showExtraColumn = false
     
@@ -73,36 +78,48 @@ struct ContentView: View {
                         
                         let sortDescriptor = sortDescriptors[0]
                         rows = rows.sorted(by: sortDescriptor.comparator)
+                        Log4swift[Self.self].info("sorted.rows: \(rows.count)")
                     }
                 )
             ) {
-                TableColumn("Year", alignment: .trailing, sortDescriptor: .init(\Car.year)) { rowValue in
+                TableColumn("Year", alignment: .trailing) { rowValue in
                     Text("\(rowValue.year)")
                         .textColor(.secondary)
                 }
+                .sortDescriptor(compare: { $0.year < $1.year })
                 .frame(width: 130)
-                TableColumn("Make", alignment: .trailing, sortDescriptor: .init(\Car.make)) { rowValue in
+                
+                TableColumn("Make", alignment: .trailing) { rowValue in
                     Text(rowValue.make)
                 }
+                .sortDescriptor(compare: { $0.make < $1.make })
                 .frame(width: 80)
-                TableColumn("", alignment: .leading, sortDescriptor: .init(\Car.self)) { rowValue in
+                
+                TableColumn("", alignment: .leading) { rowValue in
                     Text("")
                 }
+                .sortDescriptor(compare: { _, _ in false })
                 .frame(width: 20)
-                TableColumn("Model", alignment: .leading, sortDescriptor: .init(\Car.model)) { rowValue in
+                
+                TableColumn("Model", alignment: .leading) { rowValue in
                     Text(rowValue.model)
                 }
+                .sortDescriptor(compare: { $0.model < $1.model })
                 .textColor(Color.yellow)
                 .frame(width: 120)
+                
                 if showExtraColumn {
-                    TableColumn("Extra", alignment: .leading, sortDescriptor: .init(\Car.extraColumn)) { rowValue in
+                    TableColumn("Extra", alignment: .leading) { rowValue in
                         Text(rowValue.extraColumn)
                     }
+                    .sortDescriptor(compare: { $0.extraColumn < $1.extraColumn })
                     .frame(minWidth: 120, maxWidth: .infinity)
                 }
-                TableColumn("Category", alignment: .leading, sortDescriptor: .init(\Car.category)) { rowValue in
+                
+                TableColumn("Category", alignment: .leading) { rowValue in
                     Text(rowValue.category)
                 }
+                .sortDescriptor(compare: { $0.category < $1.category })
                 .frame(minWidth: 180, maxWidth: .infinity)
             }
             .id(showExtraColumn ? "showExtraColumn=true" : "showExtraColumn=false")

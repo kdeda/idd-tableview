@@ -24,7 +24,7 @@ struct TableHeader<RowValue>: View where RowValue: Equatable {
     }
 
     private func isSelectedColumn(_ column: TableColumn<RowValue>) -> Bool {
-        sortDescriptors.first(where: { $0.value == column.sortDescriptor.value }) != nil
+        sortDescriptors.first(where: { $0.columnIndex == column.sortDescriptor.columnIndex }) != nil
 
         // debug code ...
         //        let rv = sortDescriptors.first(where: { $0.value == column.sortDescriptor.value }) != nil
@@ -95,31 +95,43 @@ struct TableHeaderPreview: View {
             false
         }
     }
-    @State private var sortDescriptors: [TableColumnSort<Person>] = [
-        .init(\.firstName)
-    ]
-    @State private var columns: [TableColumn<Person>] = [
-        TableColumn("First", alignment: .trailing, sortDescriptor: .init(\Person.firstName)) { rowValue in
-            Text("\(rowValue.firstName)")
-                .frame(alignment: .trailing)
-        }
-            .frame(width: 130),
-        TableColumn("Last", alignment: .trailing, sortDescriptor: .init(\Person.lastName)) { rowValue in
-            Text(rowValue.lastName)
-                .frame(alignment: .trailing)
-        }
-            .frame(width: 80),
-        TableColumn("", alignment: .leading, sortDescriptor: .init(\Person.self)) { rowValue in
-            Text("")
-        }
-            .frame(width: 20),
-        TableColumn("Address", alignment: .leading, sortDescriptor: .init(\Person.address)) { rowValue in
-            Text(rowValue.address)
-                .frame(alignment: .trailing)
-        }
-        .frame(minWidth: 120, maxWidth: .infinity)
-    ]
+    
+    @State private var sortDescriptors: [TableColumnSort<Person>]
+    @State private var columns: [TableColumn<Person>]
 
+    init() {
+        let sortDescriptors: [TableColumnSort<Person>] = [
+            .init(compare: { $0.firstName < $1.firstName }, ascending: true, columnIndex: 1)
+        ]
+
+        let columns = [
+            TableColumn<Person>("First Name", alignment: .trailing) { rowValue in
+                Text(rowValue.firstName)
+            }
+                .sortDescriptor(compare: { $0.firstName < $1.firstName })
+                .frame(width: 130),
+            TableColumn<Person>("Last Name", alignment: .trailing) { rowValue in
+                Text(rowValue.lastName)
+                    .textColor(Color.red)
+            }
+                .sortDescriptor(compare: { $0.lastName < $1.lastName })
+                .frame(width: 80),
+            TableColumn<Person>("", alignment: .leading) { rowValue in
+                Text("")
+            }
+                .frame(width: 20),
+            TableColumn<Person>("Address", alignment: .leading) { rowValue in
+                Text(rowValue.address)
+            }
+                .sortDescriptor(compare: { $0.address < $1.address })
+                .frame(minWidth: 180, maxWidth: .infinity)
+        ]
+            .updateSortDescriptors(sortDescriptors)
+
+        self._sortDescriptors = State(initialValue: sortDescriptors)
+        self._columns = State(initialValue: columns)
+    }
+    
     var body: some View {
         TableHeader<Person>(columns: $columns, sortDescriptors: $sortDescriptors)
     }

@@ -18,16 +18,21 @@ struct File: Equatable {
         return rv
     }()
 
-    let fileURL: URL
+    // this is derived and so it does not participate in the copy process
+    // this allows sorting to be a tad bit faster
+    var fileURL: URL {
+        URL(fileURLWithPath: filePath)
+    }
+    
     let relativePath: String
-    let logicalSize: Int64
-    let physicalSize: Int64
+    var logicalSize: Int64
+    var physicalSize: Int64
     let modificationDate: Date
     let fileName: String
-    let filePath: String
+    var filePath: String
 
     init(_ fileURL: URL) {
-        self.fileURL = fileURL
+        // self.fileURL = fileURL
         
         // TODO: figure a better way to display relative paths ...
         self.relativePath = fileURL.path
