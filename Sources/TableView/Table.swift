@@ -206,6 +206,7 @@ public struct Table<RowValue>: View where RowValue: Identifiable, RowValue: Hash
 
         return VStack(spacing: 0) {
             TableHeader(columns: $columns, sortDescriptors: $sortDescriptors)
+            Divider()
             ScrollView {
                 LazyVStack(spacing: 2) {
                     ForEach(rows) { rowValue in
@@ -229,6 +230,7 @@ public struct Table<RowValue>: View where RowValue: Identifiable, RowValue: Hash
                     }
                 }
             }
+            .background(Color(NSColor.controlBackgroundColor))
         }
         .onPreferenceChange(RowValueIndexPreferenceKey<RowValue>.self) { value in
             rowIndex = value
@@ -338,7 +340,7 @@ extension Person {
 
 struct TablePreview: View {
     @State var rows: [Person] = Person.testArray1
-    @State var selection: Person.ID? = Person.testArray1[0].id
+    @State var selection: Person.ID? = Person.testArray1[1].id
     @State private var sortDescriptors: [TableColumnSort<Person>] = [
         .init(compare: { $0.firstName < $1.firstName }, ascending: true, columnIndex: 1)
     ]
@@ -360,6 +362,7 @@ struct TablePreview: View {
         ) {
             TableColumn<Person>("First Name", alignment: .trailing) { rowValue in
                 Text(rowValue.firstName)
+                    .font(.subheadline)
             }
             .frame(width: 130)
             .sortDescriptor(compare: { $0.firstName < $1.firstName })
@@ -367,17 +370,20 @@ struct TablePreview: View {
             TableColumn<Person>("Last Name", alignment: .trailing) { rowValue in
                 Text(rowValue.lastName)
                     .textColor(Color.red)
+                    .font(.subheadline)
             }
             .frame(width: 80)
             .sortDescriptor(compare: { $0.lastName < $1.lastName })
 
             TableColumn<Person>("", alignment: .leading) { rowValue in
                 Text("")
+                    .font(.subheadline)
             }
             .frame(width: 20)
             
             TableColumn<Person>("Address", alignment: .leading) { rowValue in
                 Text(rowValue.address)
+                    .font(.subheadline)
             }
             .frame(minWidth: 180, maxWidth: .infinity)
             .sortDescriptor(compare: { $0.address < $1.address })

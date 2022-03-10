@@ -45,9 +45,13 @@ struct TableHeader<RowValue>: View where RowValue: Equatable {
                         Text(column.title)
                             .fontWeight(isSelectedColumn(column) ? .bold : .regular)
                             .frame(maxWidth: .infinity, alignment: column.alignment)
+                            .lineLimit(1)
                         if isSelectedColumn(column) {
                             Image(systemName: column.iconName)
                                 .font(Font.system(.caption).bold())
+//                                .renderingMode(.template)
+//                                .resizable()
+//                                .frame(width: 12, height: 12)
                                 .foregroundColor(Color.secondary)
                         }
                     }
@@ -76,12 +80,12 @@ struct TableHeader<RowValue>: View where RowValue: Equatable {
                     }
                 }
             }
+            .frame(height: 20)
             .font(.subheadline)
             .padding(.horizontal, 8)
-            .padding(.vertical, 6)
-            Divider()
+            .padding(.vertical, 4)
+            .background(Color(NSColor.controlBackgroundColor))
         }
-        .frame(height: 30)
     }
 }
 
@@ -139,13 +143,19 @@ struct TableHeaderPreview: View {
 
 struct TableHeaderPreview_Previews: PreviewProvider {
     static var previews: some View {
-        TableHeaderPreview()
-            .frame(minWidth: 480)
-            .background(Color(NSColor.windowBackgroundColor))
-            .environment(\.colorScheme, .light)
-        TableHeaderPreview()
-            .frame(minWidth: 480)
-            .background(Color(NSColor.windowBackgroundColor))
-            .environment(\.colorScheme, .dark)
+        VStack {
+            TableHeaderPreview()
+                .frame(minWidth: 480)
+                .background(Color(NSColor.windowBackgroundColor))
+                .environment(\.colorScheme, .light)
+                .padding()
+        }
+        VStack {
+            TableHeaderPreview()
+                .frame(minWidth: 480)
+                .background(Color(NSColor.windowBackgroundColor))
+                .environment(\.colorScheme, .dark)
+                .padding()
+        }
     }
 }
