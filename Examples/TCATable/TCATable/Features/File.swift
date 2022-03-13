@@ -28,7 +28,7 @@ struct File: Equatable {
     var logicalSize: Int64
     var physicalSize: Int64
     let modificationDate: Date
-    let fileName: String
+    var fileName: String
     var filePath: String
 
     init(_ fileURL: URL) {

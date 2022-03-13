@@ -18,14 +18,22 @@ struct AppState: Equatable, Identifiable {
     var id = UUID()
     var isAppReady = false
     var files: [File] = []
+    @BindableState var selection: File.ID?
     @BindableState var selectedFiles: Set<File.ID> = []
     @BindableState var sortDescriptors: [TableColumnSort<File>] = [
         .init(
-            compare: { $0.physicalSize < $1.physicalSize },
+            compare: { $0.fileName < $1.fileName },
             ascending: true,
-            columnIndex: 0 // this needs to match to the column index
+            columnIndex: 4 // this needs to match to the column index
         )
     ]
+    
+    func modificationDateColor(_ file: File) -> Color {
+        if selectedFiles.contains(file.id) {
+            return Color.white
+        }
+        return Color.pink
+    }
 }
 
 extension File: Comparable {
@@ -55,16 +63,18 @@ extension FileClient {
                     .map(\.contentsOfDirectory)
                     .map { $0.map(File.init) }
                     .map { files -> [File] in
-                        let fileCount = files.count
+                        let filesToCopy = files[0 ..< 10]
+                        let fileCount = filesToCopy.count
                         let desiredFinalCount = 100_000 // this is how much we want to end up with
                         // as we increase this number things start to lag ...
                         let multiplier = 1 + desiredFinalCount / fileCount
 
                         // multiply the initial array by x to generate more value for performance testing
                         let rv = (0 ..< multiplier).reduce(into: [File]()) { partialResult, nextItem in
-                            let newValues: [File] = files.map { file in
+                            let newValues: [File] = filesToCopy.map { file in
                                 var newCopy = file
-                                newCopy.filePath = file.id + "\(nextItem)"
+                                newCopy.fileName = file.fileName + "\(nextItem)"
+                                newCopy.filePath = file.filePath + "\(nextItem)"
                                 newCopy.logicalSize += newCopy.logicalSize * Int64(nextItem)
                                 newCopy.physicalSize += newCopy.physicalSize * Int64(nextItem)
                                 return newCopy

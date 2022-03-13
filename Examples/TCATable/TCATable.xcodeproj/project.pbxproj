@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F34A698727DBCBD50002DA20 /* ContentView3.swift in Sources */ = {isa = PBXBuildFile; fileRef = F34A698627DBCBD50002DA20 /* ContentView3.swift */; };
 		F3D182CA27873B88001377CC /* TCATableApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3D182C927873B88001377CC /* TCATableApp.swift */; };
 		F3D182CC27873B88001377CC /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3D182CB27873B88001377CC /* ContentView.swift */; };
 		F3D182CE27873B8A001377CC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F3D182CD27873B8A001377CC /* Assets.xcassets */; };
@@ -19,6 +20,9 @@
 		F3D182FE27873CA1001377CC /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3D182FD27873CA1001377CC /* File.swift */; };
 		F3D1830527873DFC001377CC /* TableView in Frameworks */ = {isa = PBXBuildFile; productRef = F3D1830427873DFC001377CC /* TableView */; };
 		F3D1830827873E47001377CC /* SwiftCommons in Frameworks */ = {isa = PBXBuildFile; productRef = F3D1830727873E47001377CC /* SwiftCommons */; };
+		FB5401F327DE69C300B916A5 /* ColumnView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB5401F227DE69C300B916A5 /* ColumnView.swift */; };
+		FB5401F527DF090500B916A5 /* TableViewV2+ViewBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB5401F427DF090500B916A5 /* TableViewV2+ViewBuilder.swift */; };
+		FB5401F727DF094A00B916A5 /* TableHeader2.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB5401F627DF094A00B916A5 /* TableHeader2.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -39,6 +43,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		F34A698627DBCBD50002DA20 /* ContentView3.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView3.swift; sourceTree = "<group>"; };
 		F3D182C627873B88001377CC /* TCATable.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TCATable.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F3D182C927873B88001377CC /* TCATableApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TCATableApp.swift; sourceTree = "<group>"; };
 		F3D182CB27873B88001377CC /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -53,6 +58,9 @@
 		F3D182F427873BA9001377CC /* TableView */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = TableView; path = ../..; sourceTree = "<group>"; };
 		F3D182FB27873C46001377CC /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
 		F3D182FD27873CA1001377CC /* File.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
+		FB5401F227DE69C300B916A5 /* ColumnView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColumnView.swift; sourceTree = "<group>"; };
+		FB5401F427DF090500B916A5 /* TableViewV2+ViewBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TableViewV2+ViewBuilder.swift"; sourceTree = "<group>"; };
+		FB5401F627DF094A00B916A5 /* TableHeader2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableHeader2.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -110,6 +118,10 @@
 			children = (
 				F3D182C927873B88001377CC /* TCATableApp.swift */,
 				F3D182CB27873B88001377CC /* ContentView.swift */,
+				FB5401F227DE69C300B916A5 /* ColumnView.swift */,
+				FB5401F427DF090500B916A5 /* TableViewV2+ViewBuilder.swift */,
+				FB5401F627DF094A00B916A5 /* TableHeader2.swift */,
+				F34A698627DBCBD50002DA20 /* ContentView3.swift */,
 				F3D182FF27873CAF001377CC /* Features */,
 				F3D182CD27873B8A001377CC /* Assets.xcassets */,
 				F3D182D227873B8A001377CC /* TCATable.entitlements */,
@@ -298,8 +310,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FB5401F727DF094A00B916A5 /* TableHeader2.swift in Sources */,
 				F3D182FC27873C46001377CC /* AppState.swift in Sources */,
+				FB5401F327DE69C300B916A5 /* ColumnView.swift in Sources */,
 				F3D182FE27873CA1001377CC /* File.swift in Sources */,
+				F34A698727DBCBD50002DA20 /* ContentView3.swift in Sources */,
+				FB5401F527DF090500B916A5 /* TableViewV2+ViewBuilder.swift in Sources */,
 				F3D182CC27873B88001377CC /* ContentView.swift in Sources */,
 				F3D182CA27873B88001377CC /* TCATableApp.swift in Sources */,
 			);

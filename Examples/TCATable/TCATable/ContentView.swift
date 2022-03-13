@@ -48,6 +48,13 @@ struct ContentView: View {
             .padding(.all, 18)
         }
     }
+    
+    private func isSelected(_ selectedFiles: Set<File.ID>, file: File) -> Bool {
+        let rv = selectedFiles.contains(file.id)
+        
+        // Log4swift["ContentView3"].info("selection: '\(selection ?? "")' file: '\(file.id)' rv: '\(rv)'")
+        return rv
+    }
 
     var body: some View {
         WithViewStore(store) { viewStore in
@@ -59,27 +66,27 @@ struct ContentView: View {
                     multipleSelection: viewStore.binding(\.$selectedFiles),
                     sortDescriptors: viewStore.binding(\.$sortDescriptors)
                 ) {
-                    TableColumn("File Size in Bytes", alignment: .trailing) { rowValue in
-                        Text(rowValue.physicalSize.decimalFormatted)
+                    TableColumn("File Size in Bytes", alignment: .trailing) { row in
+                        Text(row.physicalSize.decimalFormatted)
                             .font(.subheadline)
                     }
                     .frame(width: 130)
                     .sortDescriptor(compare: { $0.physicalSize < $1.physicalSize })
 
-                    TableColumn("On Disk", alignment: .trailing) { rowValue in
-                        Text(rowValue.logicalSize.compactFormatted)
+                    TableColumn("On Disk", alignment: .trailing) { row in
+                        Text(row.logicalSize.compactFormatted)
                             .font(.subheadline)
                     }
                     .frame(width: 70)
                     .sortDescriptor(compare: { $0.logicalSize < $1.logicalSize })
 
-                    TableColumn("", alignment: .leading) { rowValue in
+                    TableColumn("", alignment: .leading) { row in
                         HStack {
                             Image(systemName: "magnifyingglass.circle.fill")
                                 .renderingMode(.template)
                                 .resizable()
                                 .frame(width: 12, height: 12, alignment: .center)
-                                .textColor(Color.pink)
+                                .foregroundColor(isSelected(viewStore.selectedFiles, file: row) ? .white : .pink)
                                 .font(.subheadline)
                                 .padding(.horizontal, 4)
                                 .frame(width: 20)
@@ -88,27 +95,29 @@ struct ContentView: View {
                             //        Log4swift[Self.self].info("revealInFinder: \(file.filePath)")
                             //    }
                         }
+                        // .frame(height: 48)
                     }
                     .frame(width: 20)
 
-                    TableColumn("Last Modified", alignment: .leading) { rowValue in
-                        Text(File.lastModified.string(from: rowValue.modificationDate))
+                    TableColumn("Last Modified", alignment: .leading) { row in
+                        Text(File.lastModified.string(from: row.modificationDate))
                             .lineLimit(1)
                             .font(.subheadline)
+                            .foregroundColor(isSelected(viewStore.selectedFiles, file: row) ? .white : .pink)
                     }
                     .frame(width: 160)
                     .sortDescriptor(compare: { $0.modificationDate < $1.modificationDate })
 
-                    TableColumn("File Name", alignment: .leading) { rowValue in
-                        Text(rowValue.fileName)
+                    TableColumn("File Name", alignment: .leading) { row in
+                        Text(row.fileName)
                             .lineLimit(1)
                             .font(.subheadline)
                     }
                     .frame(width: 160)
                     .sortDescriptor(compare: { $0.fileName < $1.fileName })
 
-                    TableColumn("File Path", alignment: .leading) { rowValue in
-                        Text(rowValue.filePath)
+                    TableColumn("File Path", alignment: .leading) { row in
+                        Text(row.filePath)
                             .lineLimit(1)
                             .font(.subheadline)
                     }

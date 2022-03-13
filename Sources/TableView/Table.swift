@@ -124,6 +124,7 @@ public struct Table<RowValue>: View where RowValue: Identifiable, RowValue: Hash
         self._multipleSelection = multipleSelection
         self._sortDescriptors = sortDescriptors
 
+        Log4swift["View.debug"].info("\(type(of: columns))")
         let updatedColumns = columns().updateSortDescriptors(sortDescriptors.wrappedValue)
         self._columns = State(initialValue: updatedColumns)
         Log4swift[Self.self].info("columns: \(self.columns.count)")
@@ -164,9 +165,10 @@ public struct Table<RowValue>: View where RowValue: Identifiable, RowValue: Hash
     
     @ViewBuilder
     fileprivate func rowView(_ rowValue: RowValue) -> some View {
-        HStack(alignment: .center, spacing: 6) {
+        HStack(alignment: .top, spacing: 6) {
             ForEach(columns) { column in
                 TableViewColumnView(
+                    title: column.title,
                     isSelected: isSelectedRowID(rowValue.id),
                     textColor: column.textColor
                 ) {
@@ -318,9 +320,10 @@ extension Person: Comparable {
 extension Person {
     // https://www.fakepersongenerator.com/random-address
     static let testArray1: [Person] = [
-        .init(firstName: "Lincoln", lastName: "Smith", address: "1461 Lincoln Drive, Hummelstown, PA"),
-        .init(firstName: "Meadow", lastName: "Smith", address: "4586 Meadow Lane, Santa Rosa, CA"),
-        .init(firstName: "Pike", lastName: "Smith", address: "4994 Pike Street, Del Mar, CA"),
+        .init(firstName: "Lincoln", lastName: "Drive", address: "1461 Lincoln Drive, Hummelstown, PA"),
+        .init(firstName: "Meadow", lastName: "Lane", address: "4586 Meadow Lane, Santa Rosa, CA"),
+        .init(firstName: "Pike", lastName: "Street", address: "4994 Pike Street, Del Mar, CA"),
+        .init(firstName: "Mulberry", lastName: "Avenue", address: "4046 Mulberry Avenue, Heber Springs, AR"),
 //        .init(firstName: "John", lastName: "Smith", address: "1461 Lincoln Drive, Hummelstown, PA"),
 //        .init(firstName: "John", lastName: "Smith", address: "4586 Meadow Lane, Santa Rosa, CA"),
 //        .init(firstName: "John", lastName: "Smith", address: "1461 Lincoln Drive, Hummelstown, PA"),
@@ -342,7 +345,7 @@ struct TablePreview: View {
     @State var rows: [Person] = Person.testArray1
     @State var selection: Person.ID? = Person.testArray1[1].id
     @State private var sortDescriptors: [TableColumnSort<Person>] = [
-        .init(compare: { $0.firstName < $1.firstName }, ascending: true, columnIndex: 1)
+        .init(compare: { $0.address < $1.address }, ascending: true, columnIndex: 3)
     ]
 
     var body: some View {
@@ -382,7 +385,7 @@ struct TablePreview: View {
             .frame(width: 20)
             
             TableColumn<Person>("Address", alignment: .leading) { rowValue in
-                Text(rowValue.address)
+                Text(rowValue.address + " " + rowValue.address)
                     .font(.subheadline)
             }
             .frame(minWidth: 180, maxWidth: .infinity)
@@ -414,8 +417,11 @@ struct ForegroundColorPreferenceKey: PreferenceKey {
 }
 
 extension View {
+    // TODO: kdeda
+    // this does not properly propagate ...
     public func textColor(_ color: Color) -> some View {
-        self.preference(key: ForegroundColorPreferenceKey.self, value: color)
+        Log4swift["View"].info("textColor: '\(color)'")
+        return self.preference(key: ForegroundColorPreferenceKey.self, value: color)
     }
 }
 
@@ -441,11 +447,19 @@ fileprivate struct TableViewColumnView<Content>: View where Content: View {
     }
     
     var body: some View {
-        // Log4swift[Self.self].info("column: '\(title)' isSelected: '\(isSelected)' textColor: '\(textColor)'")
-        return content()
+        let content = content()
+        title == "Last Modified"
+        ? Log4swift["TableViewColumnView"].info("              body column: '\(title)' isSelected: '\(isSelected)' textColor: '\(textColor)'")
+        : ()
+        let rv = content
             .foregroundColor(isSelected ? Color.white : textColor)
             .onPreferenceChange(ForegroundColorPreferenceKey.self) { textColor in
+                title == "Last Modified"
+                ? Log4swift["TableViewColumnView"].info("onPreferenceChange column: '\(title)' isSelected: '\(isSelected)' textColor: '\(textColor)'")
+                : ()
                 self.textColor = textColor
             }
+        
+        return rv
     }
 }

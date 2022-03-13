@@ -29,7 +29,8 @@ struct TCATableApp: App {
     
     var body: some Scene {
         WindowGroup {
-            ContentView(store: AppState.live)
+            ContentView3(store: AppState.live)
+            // ContentView(store: AppState.live)
         }
     }
 }

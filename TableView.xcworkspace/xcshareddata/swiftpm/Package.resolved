@@ -24,7 +24,7 @@
         "repositoryURL": "https://github.com/kdeda/idd-swift-commons",
         "state": {
           "branch": "master",
-          "revision": "a0dc0ad2e9e2d7dd49da4149845403c96d253419",
+          "revision": "e22f0f775d06eecbe7dc53aa5a82784a2b13efc1",
           "version": null
         }
       },
@@ -60,8 +60,8 @@
         "repositoryURL": "https://github.com/pointfreeco/swift-composable-architecture",
         "state": {
           "branch": null,
-          "revision": "313dd217dcd1d0478118ec5d15225fd473c1564a",
-          "version": "0.32.0"
+          "revision": "2828dc44f6e3f81d84bcaba72c1ab1c0121d66f6",
+          "version": "0.34.0"
         }
       },
       {
