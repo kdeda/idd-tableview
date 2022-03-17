@@ -49,14 +49,10 @@ struct TableHeader<RowValue>: View where RowValue: Equatable {
                         if isSelectedColumn(column) {
                             Image(systemName: column.iconName)
                                 .font(Font.system(.caption).bold())
-//                                .renderingMode(.template)
-//                                .resizable()
-//                                .frame(width: 12, height: 12)
-                                .foregroundColor(Color.secondary)
                         }
                     }
                     .padding(.vertical, 4)
-                    .foregroundColor(Color.primary)
+                    .foregroundColor(isSelectedColumn(column) ? Color.primary : Color.secondary)
                     .frame(minWidth: column.minWidth, maxWidth: column.maxWidth, alignment: column.alignment)
                     // .background(Color.yellow)
                     .contentShape(Rectangle())
