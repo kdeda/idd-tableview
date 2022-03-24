@@ -164,7 +164,7 @@ public struct Table<RowValue>: View where RowValue: Identifiable, RowValue: Hash
     
     @ViewBuilder
     fileprivate func rowView(_ rowValue: RowValue) -> some View {
-        HStack(alignment: .center, spacing: 6) {
+        HStack(alignment: .top, spacing: 6) {
             ForEach(columns) { column in
                 TableViewColumnView(
                     isSelected: isSelectedRowID(rowValue.id),
@@ -382,7 +382,7 @@ struct TablePreview: View {
             .frame(width: 20)
             
             TableColumn<Person>("Address", alignment: .leading) { rowValue in
-                Text(rowValue.address)
+                Text(rowValue.address + " " + rowValue.address)
                     .font(.subheadline)
             }
             .frame(minWidth: 180, maxWidth: .infinity)
