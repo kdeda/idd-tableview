@@ -68,7 +68,7 @@ struct Store {
             let result = try decoder.decode(Result.self, from: data)
             let initialArray = result.results
             
-            let rv = (0 ..< 1).reduce(into: [Car]()) { partialResult, nextItem in
+            let rv = (0 ..< 2).reduce(into: [Car]()) { partialResult, nextItem in
                 let newValues: [Car] = initialArray.map { car in
                     var newCopy = car
                     newCopy.id = car.id + "\(nextItem)"

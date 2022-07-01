@@ -94,7 +94,8 @@ public struct Table<RowValue>: View where RowValue: Identifiable, RowValue: Hash
     @State private var columns: [TableColumn<RowValue>] = []
     @State private var rowIndex: [RowValueIndex<RowValue>] = []
     @State private var draggedRows: [RowValue.ID: DraggedRowValue] = [:]
-    
+    @State private var selectRowID_from_onTapGesture = false
+
     public init(
         _ rows: Array<RowValue>,
         singleSelection: Binding<RowValue.ID?>,
@@ -191,6 +192,7 @@ public struct Table<RowValue>: View where RowValue: Identifiable, RowValue: Hash
             case .single: singleSelection = .none
             case .multiple: multipleSelection.removeAll()
             }
+            self.selectRowID_from_onTapGesture = true
             selectRowID(rowValue.id)
             draggedRows.removeAll()
         }
@@ -208,29 +210,44 @@ public struct Table<RowValue>: View where RowValue: Identifiable, RowValue: Hash
             TableHeader(columns: $columns, sortDescriptors: $sortDescriptors)
             Divider()
             ScrollView {
-                LazyVStack(spacing: 2) {
-                    ForEach(rows) { rowValue in
-                        rowView(rowValue)
-                            .padding(.leading, 8)
-                            .background(isSelectedRowID(rowValue.id) ? selectedControlColor : Color.clear)
+                ScrollViewReader { value in
+                    LazyVStack(spacing: 2) {
+                        ForEach(rows) { rowValue in
+                            rowView(rowValue)
+                                .padding(.leading, 8)
+                                .background(isSelectedRowID(rowValue.id) ? selectedControlColor : Color.clear)
                             // .border(isSelectedRowID(rowValue.id) ? selectedControlColor : .clear)
-                            .background(
-                                GeometryReader { geometry in
-                                    Rectangle()
-                                        .fill(Color.clear)
-                                        .preference(
-                                            key: RowValueIndexPreferenceKey<RowValue>.self,
-                                            value: [RowValueIndex(
-                                                id: rowValue.id,
-                                                bounds: geometry.frame(in: .named("TableView"))
-                                            )]
-                                        )
-                                }
-                            )
+                                .background(
+                                    GeometryReader { geometry in
+                                        Rectangle()
+                                            .fill(Color.clear)
+                                            .preference(
+                                                key: RowValueIndexPreferenceKey<RowValue>.self,
+                                                value: [RowValueIndex(
+                                                    id: rowValue.id,
+                                                    bounds: geometry.frame(in: .named("TableView"))
+                                                )]
+                                            )
+                                    }
+                                )
+                                .id(rowValue.id)
+                        }
+                    }
+                    .onChange(of: self.singleSelection) { [oldValue = self.singleSelection] newValue in
+                        defer { self.selectRowID_from_onTapGesture = false }
+                        
+                        // if we change from onTapGesture, move on
+                        guard !selectRowID_from_onTapGesture
+                        else { return }
+                        
+                        let old = oldValue.flatMap { "\($0)" }
+                        let new = newValue.flatMap { "\($0)" }
+                        Log4swift[Self.self].info("onChange of singleSelection: '\(old ?? ".none")' -> '\(new ?? ".none")'")
+                        value.scrollTo(newValue, anchor: .top)
                     }
                 }
+                .background(Color(NSColor.controlBackgroundColor))
             }
-            .background(Color(NSColor.controlBackgroundColor))
         }
         .onPreferenceChange(RowValueIndexPreferenceKey<RowValue>.self) { value in
             rowIndex = value

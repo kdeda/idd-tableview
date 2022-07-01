@@ -57,6 +57,13 @@ struct ContentView: View {
                     Text(showExtraColumn ? "Hide The Extra Column" : "Show The Extra Column")
                         .fontWeight(.semibold)
                 }
+                Button(action: {
+                    let count = cars.count - 4
+                    self.selection = cars[count].id
+                }) {
+                    Text("Scroll Selection To Visible")
+                        .fontWeight(.semibold)
+                }
                 // .buttonStyle(PlainButtonStyle())
             }
         }
