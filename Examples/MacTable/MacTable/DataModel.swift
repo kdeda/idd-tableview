@@ -67,8 +67,9 @@ struct Store {
             let data = try Data(contentsOf: url)
             let result = try decoder.decode(Result.self, from: data)
             let initialArray = result.results
+            let multiplier = 2 // increase this for more rows
             
-            let rv = (0 ..< 2).reduce(into: [Car]()) { partialResult, nextItem in
+            let rv = (0 ..< multiplier).reduce(into: [Car]()) { partialResult, nextItem in
                 let newValues: [Car] = initialArray.map { car in
                     var newCopy = car
                     newCopy.id = car.id + "\(nextItem)"

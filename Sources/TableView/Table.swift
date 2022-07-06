@@ -92,9 +92,9 @@ public struct Table<RowValue>: View where RowValue: Identifiable, RowValue: Hash
     @Binding private var multipleSelection: Set<RowValue.ID>
     @Binding private var sortDescriptors: [TableColumnSort<RowValue>]
     @State private var columns: [TableColumn<RowValue>] = []
-    @State private var rowIndex: [RowValueIndex<RowValue>] = []
+    @State private var rowIndexes: [RowValueIndex<RowValue>] = []
     @State private var draggedRows: [RowValue.ID: DraggedRowValue] = [:]
-    @State private var selectRowID_from_onTapGesture = false
+    @State private var singleSelectionInternalChange = false
 
     public init(
         _ rows: Array<RowValue>,
@@ -142,7 +142,9 @@ public struct Table<RowValue>: View where RowValue: Identifiable, RowValue: Hash
     private func selectRowID(_ rowID: RowValue.ID) {
         // Log4swift[Self.self].info("rowID: '\(rowID)'")
         switch selectionType {
-        case .single: singleSelection = rowID
+        case .single:
+            singleSelectionInternalChange = true
+            singleSelection = rowID
         case .multiple:
             if !multipleSelection.contains(rowID) {
                 multipleSelection.insert(rowID)
@@ -192,7 +194,6 @@ public struct Table<RowValue>: View where RowValue: Identifiable, RowValue: Hash
             case .single: singleSelection = .none
             case .multiple: multipleSelection.removeAll()
             }
-            self.selectRowID_from_onTapGesture = true
             selectRowID(rowValue.id)
             draggedRows.removeAll()
         }
@@ -219,45 +220,64 @@ public struct Table<RowValue>: View where RowValue: Identifiable, RowValue: Hash
                             // .border(isSelectedRowID(rowValue.id) ? selectedControlColor : .clear)
                                 .background(
                                     GeometryReader { geometry in
-                                        Rectangle()
-                                            .fill(Color.clear)
-                                            .preference(
-                                                key: RowValueIndexPreferenceKey<RowValue>.self,
-                                                value: [RowValueIndex(
-                                                    id: rowValue.id,
-                                                    bounds: geometry.frame(in: .named("TableView"))
-                                                )]
-                                            )
+                                        Color.clear.preference(
+                                            key: RowValueIndexPreferenceKey<RowValue>.self,
+                                            value: [RowValueIndex(
+                                                id: rowValue.id,
+                                                bounds: geometry.frame(in: .named("TableView"))
+                                            )]
+                                        )
                                     }
                                 )
-                                .id(rowValue.id)
                         }
                     }
-                    .onChange(of: self.singleSelection) { [oldValue = self.singleSelection] newValue in
-                        defer { self.selectRowID_from_onTapGesture = false }
-                        
-                        // if we change from onTapGesture, move on
-                        guard !selectRowID_from_onTapGesture
+                    .onAppear {
+                        // make sure to scroll to visible if our single selection is not
+                        Log4swift[Self.self].info("onAppear")
+                        guard let honestValue = self.singleSelection
                         else { return }
                         
-                        let old = oldValue.flatMap { "\($0)" }
-                        let new = newValue.flatMap { "\($0)" }
-                        Log4swift[Self.self].info("onChange of singleSelection: '\(old ?? ".none")' -> '\(new ?? ".none")'")
-                        value.scrollTo(newValue, anchor: .top)
+                        Log4swift[Self.self].info("onAppear singleSelection: '\(honestValue)'")
+                        value.scrollTo(honestValue, anchor: .top)
+                    }
+                    .onChange(of: self.singleSelection) { newValue in
+                        // make sure to scroll to visible when the single selection is modified
+                        // ignore this if we modify it during internal selection
+                        defer { self.singleSelectionInternalChange = false }
+                        
+                        guard !singleSelectionInternalChange,
+                              let honestValue = self.singleSelection
+                        else { return }
+                        
+                        value.scrollTo(honestValue, anchor: .top)
                     }
                 }
                 .background(Color(NSColor.controlBackgroundColor))
             }
         }
         .onPreferenceChange(RowValueIndexPreferenceKey<RowValue>.self) { value in
-            rowIndex = value
+            // TODO: kdeda
+            // July 2022
+            // for some reason i do get a warning in the console
+            // 'Bound preference RowValueIndexPreferenceKey<Car> tried to update multiple times per frame'
+            // it does not affect the workings but after a few hours of digging i gave up as to why
+            // in theory we are experiencing an update cycle, but no idea why
+            //            let rows = value.map(\.id)
+            //            let newValues = value.filter { newValue in
+            //                let match = rowIndexes.first { existing in
+            //                    existing == newValue
+            //                }
+            //                return match == .none
+            //            }
+            //            Log4swift[Self.self].info("onPreferenceChange newValues: '\(newValues.count)' rowIndexes: '\(rows.count)'")
+            rowIndexes = value
         }
         .gesture(
             DragGesture()
                 .onChanged { drag in
                     // this can be called directly on drag, before calling onTapGesture ...
                     //
-                    guard let row = rowIndex.first(where: { $0.bounds.contains(drag.location) })
+                    guard let row = rowIndexes.first(where: { $0.bounds.contains(drag.location) })
                     else {
                         // we might hit here for the pixels in between the rows now hard coded at 2 pixels
                         // LazyVStack(spacing: 2)

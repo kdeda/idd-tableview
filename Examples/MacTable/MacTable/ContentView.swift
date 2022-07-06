@@ -94,7 +94,7 @@ struct ContentView: View {
                         .textColor(.secondary)
                 }
                 .sortDescriptor(compare: { $0.year < $1.year })
-                .frame(width: 130)
+                .frame(width: 60)
                 
                 TableColumn("Make", alignment: .trailing) { rowValue in
                     Text(rowValue.make)
@@ -113,14 +113,14 @@ struct ContentView: View {
                 }
                 .sortDescriptor(compare: { $0.model < $1.model })
                 .textColor(Color.yellow)
-                .frame(width: 120)
+                .frame(width: 80)
                 
                 if showExtraColumn {
                     TableColumn("Extra", alignment: .leading) { rowValue in
                         Text(rowValue.extraColumn)
                     }
                     .sortDescriptor(compare: { $0.extraColumn < $1.extraColumn })
-                    .frame(minWidth: 120, maxWidth: .infinity)
+                    .frame(width: 160)
                 }
                 
                 TableColumn("Category", alignment: .leading) { rowValue in
@@ -131,7 +131,7 @@ struct ContentView: View {
             }
             .id(showExtraColumn ? "showExtraColumn=true" : "showExtraColumn=false")
         }
-        .frame(maxWidth: 1280, minHeight: 480, maxHeight: 800)
+        .frame(minWidth: 680, maxWidth: 1280, minHeight: 480, maxHeight: 800)
         // .debug()
     }
 }
