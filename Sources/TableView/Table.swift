@@ -252,8 +252,8 @@ public struct Table<RowValue>: View where RowValue: Identifiable, RowValue: Hash
                         value.scrollTo(honestValue, anchor: .top)
                     }
                 }
-                .background(Color(NSColor.controlBackgroundColor))
             }
+            .background(Color(NSColor.controlBackgroundColor))
         }
         .onPreferenceChange(RowValueIndexPreferenceKey<RowValue>.self) { value in
             // TODO: kdeda
