@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import AppKit
 import SwiftCommons
 
 struct File: Equatable {
@@ -41,6 +42,10 @@ struct File: Equatable {
         self.modificationDate = fileURL.contentModificationDate
         self.fileName = fileURL.lastPathComponent
         self.filePath = fileURL.path
+    }
+    
+    var icon: NSImage {
+        NSWorkspace.shared.icon(forFile: filePath)
     }
 }
 

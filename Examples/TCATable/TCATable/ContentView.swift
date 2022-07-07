@@ -107,10 +107,20 @@ struct ContentView: View {
                     .frame(width: 160)
                     .sortDescriptor(compare: { $0.fileName < $1.fileName })
 
+                    TableColumn("", alignment: .center) { rowValue in
+                        Image(nsImage: rowValue.icon)
+                            .resizable()
+                            .frame(width: 24, height: 24)
+                    }
+                    .frame(width: 18)
+
                     TableColumn("File Path", alignment: .leading) { rowValue in
+                        // If we want pixel perfection than we adjust the height
+                        // of this column to be the same as the icon column
                         Text(rowValue.filePath)
                             .lineLimit(1)
                             .font(.subheadline)
+                            .frame(height: 24)
                     }
                     .frame(minWidth: 180, maxWidth: .infinity)
                     .sortDescriptor(compare: { $0.filePath < $1.filePath })
