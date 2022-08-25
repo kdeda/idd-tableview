@@ -51,6 +51,7 @@ public struct TableColumn<RowValue>: Identifiable where RowValue: Equatable {
     @ViewBuilder
     public func createColumnView(_ rowValue: RowValue) -> some View {
         content(rowValue)
+            .frame(minWidth: minWidth, maxWidth: maxWidth, alignment: alignment)
     }
 
     public var iconName: String {

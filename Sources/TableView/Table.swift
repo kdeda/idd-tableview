@@ -166,24 +166,29 @@ public struct Table<RowValue>: View where RowValue: Identifiable, RowValue: Hash
     }
     
     @ViewBuilder
+    /**
+     This code should follow the logic on the TableHeader.
+     So that we can calculate columns in line with the header
+     */
     fileprivate func rowView(_ rowValue: RowValue) -> some View {
-        HStack(alignment: .top, spacing: 6) {
+        HStack(alignment: .top, spacing: TableViewConfig.shared.betweenColumnsPadding) {
             ForEach(columns) { column in
                 TableViewColumnView(
                     isSelected: isSelectedRowID(rowValue.id),
                     textColor: column.textColor
                 ) {
                     column.createColumnView(rowValue)
-                        .frame(minWidth: column.minWidth, maxWidth: column.maxWidth, alignment: column.alignment)
                 }
                 // .debug()
                 if !columns.isLastColumn(column) {
                     Divider()
                 }
             }
-            Spacer()
         }
         .padding(.vertical, 4)
+        .padding(.horizontal, TableViewConfig.shared.horizontalPadding)
+        .background(isSelectedRowID(rowValue.id) ? selectedControlColor : Color.clear)
+        // .border(Color.yellow)
         .contentShape(Rectangle())
         .onTapGesture {
             // when selecting one row we remove all other selections
@@ -215,9 +220,6 @@ public struct Table<RowValue>: View where RowValue: Identifiable, RowValue: Hash
                     LazyVStack(spacing: 2) {
                         ForEach(rows) { rowValue in
                             rowView(rowValue)
-                                .padding(.leading, 8)
-                                .background(isSelectedRowID(rowValue.id) ? selectedControlColor : Color.clear)
-                            // .border(isSelectedRowID(rowValue.id) ? selectedControlColor : .clear)
                                 .background(
                                     GeometryReader { geometry in
                                         Color.clear.preference(
@@ -432,8 +434,12 @@ struct TablePreview: View {
 struct TablePreview_Previews: PreviewProvider {
     static var previews: some View {
         TablePreview()
-            .frame(minWidth: 480)
-            .background(Color(NSColor.windowBackgroundColor))
+            .frame(width: 655)
+            .padding()
+        // setting a frame does cause some problems if the frame is smaller than the intrinsic size
+        // from TableHeader.body tips
+        // the intrinsic size should be 130 + 80 + 20 + 180 + (4 + 3) * betweenColumnsPadding + 2 + horizontalPadding or 455
+            // .background(Color(NSColor.windowBackgroundColor))
             .environment(\.colorScheme, .light)
         TablePreview()
             .frame(minWidth: 480)

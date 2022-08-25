@@ -62,6 +62,7 @@ struct ContentView: View {
                     TableColumn("File Size in Bytes", alignment: .trailing) { rowValue in
                         Text(rowValue.physicalSize.decimalFormatted)
                             .font(.subheadline)
+                            .frame(height: 24)
                     }
                     .frame(width: 130)
                     .sortDescriptor(compare: { $0.physicalSize < $1.physicalSize })
@@ -69,6 +70,7 @@ struct ContentView: View {
                     TableColumn("On Disk", alignment: .trailing) { rowValue in
                         Text(rowValue.logicalSize.compactFormatted)
                             .font(.subheadline)
+                            .frame(height: 24)
                     }
                     .frame(width: 70)
                     .sortDescriptor(compare: { $0.logicalSize < $1.logicalSize })
@@ -88,6 +90,7 @@ struct ContentView: View {
                             //        Log4swift[Self.self].info("revealInFinder: \(file.filePath)")
                             //    }
                         }
+                        .frame(height: 24)
                     }
                     .frame(width: 20)
 
@@ -95,6 +98,7 @@ struct ContentView: View {
                         Text(File.lastModified.string(from: rowValue.modificationDate))
                             .lineLimit(1)
                             .font(.subheadline)
+                            .frame(height: 24)
                     }
                     .frame(width: 160)
                     .sortDescriptor(compare: { $0.modificationDate < $1.modificationDate })
@@ -103,6 +107,7 @@ struct ContentView: View {
                         Text(rowValue.fileName)
                             .lineLimit(1)
                             .font(.subheadline)
+                            .frame(height: 24)
                     }
                     .frame(width: 160)
                     .sortDescriptor(compare: { $0.fileName < $1.fileName })
@@ -112,7 +117,7 @@ struct ContentView: View {
                             .resizable()
                             .frame(width: 24, height: 24)
                     }
-                    .frame(width: 18)
+                    .frame(width: 20)
 
                     TableColumn("File Path", alignment: .leading) { rowValue in
                         // If we want pixel perfection than we adjust the height
@@ -134,7 +139,9 @@ struct ContentView: View {
                         .padding(.all, 8)
                 }
             }
-            .frame(minWidth: 820, maxWidth: 1280, minHeight: 480, maxHeight: 800)
+            // from TableHeader.body tips
+            // the intrinsic size should be 740 + (7 + 6) * 5 + 10 or 815
+            .frame(minWidth: 815, maxWidth: 1280, minHeight: 480, maxHeight: 800)
             .onAppear(perform: { viewStore.send(.appDidStart) })
         }
     }
@@ -143,6 +150,7 @@ struct ContentView: View {
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView(store: AppState.mock)
+            .frame(width: 815)
             .background(Color(NSColor.windowBackgroundColor))
             .environment(\.colorScheme, .light)
         ContentView(store: AppState.mock)
