@@ -45,8 +45,7 @@ struct TableHeader<RowValue>: View where RowValue: Equatable {
      the sum of all columns + horizontalPadding + (n + (n - 1)) * betweenColumnsPadding + horizontalPadding
      */
     var body: some View {
-        Log4swift[Self.self].info("columns: \(self.columns.count)")
-        
+        // Log4swift[Self.self].info("columns: \(self.columns.count)")
         return HStack(alignment: .center, spacing: TableViewConfig.shared.betweenColumnsPadding) {
             ForEach($columns) { $column in
                 HStack(spacing: 0) {

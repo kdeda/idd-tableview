@@ -110,7 +110,7 @@ public struct Table<RowValue>: View where RowValue: Identifiable, RowValue: Hash
         
         let updatedColumns = columns().updateSortDescriptors(sortDescriptors.wrappedValue)
         self._columns = State(initialValue: updatedColumns)
-        Log4swift[Self.self].info("columns: \(self.columns.count)")
+        // Log4swift[Self.self].info("columns: \(self.columns.count)")
     }
     
     public init(
@@ -127,7 +127,7 @@ public struct Table<RowValue>: View where RowValue: Identifiable, RowValue: Hash
 
         let updatedColumns = columns().updateSortDescriptors(sortDescriptors.wrappedValue)
         self._columns = State(initialValue: updatedColumns)
-        Log4swift[Self.self].info("columns: \(self.columns.count)")
+        // Log4swift[Self.self].info("columns: \(self.columns.count)")
     }
     
     private  func isSelectedRowID(_ rowID: RowValue.ID) -> Bool {
@@ -179,6 +179,7 @@ public struct Table<RowValue>: View where RowValue: Identifiable, RowValue: Hash
                 ) {
                     column.createColumnView(rowValue)
                 }
+                // .border(Color.yellow)
                 // .debug()
                 if !columns.isLastColumn(column) {
                     Divider()
@@ -210,8 +211,7 @@ public struct Table<RowValue>: View where RowValue: Identifiable, RowValue: Hash
     }
     
     public var body: some View {
-        Log4swift[Self.self].info("columns: \(self.columns.count)")
-
+        // Log4swift[Self.self].info("columns: \(self.columns.count)")
         return VStack(spacing: 0) {
             TableHeader(columns: $columns, sortDescriptors: $sortDescriptors)
             Divider()
