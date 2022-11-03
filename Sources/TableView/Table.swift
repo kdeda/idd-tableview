@@ -164,7 +164,26 @@ public struct Table<RowValue>: View where RowValue: Identifiable, RowValue: Hash
             }
         }
     }
-    
+
+    // we are extending the multiple selection
+    // calculate the ranges and select
+    private func extendMultipleSelection(_ rowID: RowValue.ID) {
+        guard let newIndex = rows.firstIndex(where: { $0.id == rowID })
+        else { return }
+
+        let selectedIndexes = multipleSelection.compactMap { rowID in
+            rows.firstIndex(where: { $0.id == rowID })
+        }
+        let minIndex = min(selectedIndexes.min() ?? -1, newIndex)
+        let maxIndex = max(selectedIndexes.max() ?? 0, newIndex)
+
+        // Log4swift[Self.self].info("extendSelection: \(rowID)")
+        Log4swift[Self.self].info("newRange: [\(minIndex) ... \(maxIndex)]")
+        (minIndex ... maxIndex).forEach {
+            selectRowID(rows[$0].id)
+        }
+    }
+
     @ViewBuilder
     /**
      This code should follow the logic on the TableHeader.
@@ -198,7 +217,16 @@ public struct Table<RowValue>: View where RowValue: Identifiable, RowValue: Hash
             //
             switch selectionType {
             case .single: singleSelection = .none
-            case .multiple: multipleSelection.removeAll()
+            case .multiple:
+                let modifierFlags = NSApp.currentEvent?.modifierFlags
+                let flags = modifierFlags ?? NSEvent.ModifierFlags(rawValue: 0)
+                let isShiftClick = flags.contains([.shift]) // click + shift
+
+                if isShiftClick {
+                    extendMultipleSelection(rowValue.id)
+                } else {
+                    multipleSelection.removeAll()
+                }
             }
             selectRowID(rowValue.id)
             draggedRows.removeAll()
