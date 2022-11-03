@@ -57,6 +57,12 @@ extension File: Identifiable {
 
 extension File: Hashable {}
 
+extension File: Comparable {
+    static func < (lhs: File, rhs: File) -> Bool {
+        false
+    }
+}
+
 extension URL {
     /// Returns an array of immediate child urls, without recursing deep into the file hierarchy
     var contentsOfDirectory: [URL] {

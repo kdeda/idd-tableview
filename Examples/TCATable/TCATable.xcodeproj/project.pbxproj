@@ -8,17 +8,18 @@
 
 /* Begin PBXBuildFile section */
 		F3D182CA27873B88001377CC /* TCATableApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3D182C927873B88001377CC /* TCATableApp.swift */; };
-		F3D182CC27873B88001377CC /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3D182CB27873B88001377CC /* ContentView.swift */; };
+		F3D182CC27873B88001377CC /* AppRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3D182CB27873B88001377CC /* AppRootView.swift */; };
 		F3D182CE27873B8A001377CC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F3D182CD27873B8A001377CC /* Assets.xcassets */; };
 		F3D182D127873B8A001377CC /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F3D182D027873B8A001377CC /* Preview Assets.xcassets */; };
 		F3D182DC27873B8A001377CC /* TCATableTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3D182DB27873B8A001377CC /* TCATableTests.swift */; };
 		F3D182E627873B8A001377CC /* TCATableUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3D182E527873B8A001377CC /* TCATableUITests.swift */; };
 		F3D182E827873B8A001377CC /* TCATableUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3D182E727873B8A001377CC /* TCATableUITestsLaunchTests.swift */; };
 		F3D182FA27873C39001377CC /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = F3D182F927873C39001377CC /* ComposableArchitecture */; };
-		F3D182FC27873C46001377CC /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3D182FB27873C46001377CC /* AppState.swift */; };
+		F3D182FC27873C46001377CC /* AppRoot.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3D182FB27873C46001377CC /* AppRoot.swift */; };
 		F3D182FE27873CA1001377CC /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3D182FD27873CA1001377CC /* File.swift */; };
 		F3D1830527873DFC001377CC /* TableView in Frameworks */ = {isa = PBXBuildFile; productRef = F3D1830427873DFC001377CC /* TableView */; };
 		F3D1830827873E47001377CC /* SwiftCommons in Frameworks */ = {isa = PBXBuildFile; productRef = F3D1830727873E47001377CC /* SwiftCommons */; };
+		F3FD827C29142DD800C4DB22 /* FileClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3FD827B29142DD800C4DB22 /* FileClient.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -41,7 +42,7 @@
 /* Begin PBXFileReference section */
 		F3D182C627873B88001377CC /* TCATable.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TCATable.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F3D182C927873B88001377CC /* TCATableApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TCATableApp.swift; sourceTree = "<group>"; };
-		F3D182CB27873B88001377CC /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		F3D182CB27873B88001377CC /* AppRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppRootView.swift; sourceTree = "<group>"; };
 		F3D182CD27873B8A001377CC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F3D182D027873B8A001377CC /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		F3D182D227873B8A001377CC /* TCATable.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TCATable.entitlements; sourceTree = "<group>"; };
@@ -51,8 +52,9 @@
 		F3D182E527873B8A001377CC /* TCATableUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TCATableUITests.swift; sourceTree = "<group>"; };
 		F3D182E727873B8A001377CC /* TCATableUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TCATableUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		F3D182F427873BA9001377CC /* TableView */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = TableView; path = ../..; sourceTree = "<group>"; };
-		F3D182FB27873C46001377CC /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
+		F3D182FB27873C46001377CC /* AppRoot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppRoot.swift; sourceTree = "<group>"; };
 		F3D182FD27873CA1001377CC /* File.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
+		F3FD827B29142DD800C4DB22 /* FileClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileClient.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -109,11 +111,10 @@
 			isa = PBXGroup;
 			children = (
 				F3D182C927873B88001377CC /* TCATableApp.swift */,
-				F3D182CB27873B88001377CC /* ContentView.swift */,
-				F3D182FF27873CAF001377CC /* Features */,
 				F3D182CD27873B8A001377CC /* Assets.xcassets */,
-				F3D182D227873B8A001377CC /* TCATable.entitlements */,
+				F3D182FF27873CAF001377CC /* Features */,
 				F3D182CF27873B8A001377CC /* Preview Content */,
+				F3D182D227873B8A001377CC /* TCATable.entitlements */,
 			);
 			path = TCATable;
 			sourceTree = "<group>";
@@ -146,8 +147,10 @@
 		F3D182FF27873CAF001377CC /* Features */ = {
 			isa = PBXGroup;
 			children = (
-				F3D182FB27873C46001377CC /* AppState.swift */,
+				F3D182FB27873C46001377CC /* AppRoot.swift */,
+				F3D182CB27873B88001377CC /* AppRootView.swift */,
 				F3D182FD27873CA1001377CC /* File.swift */,
+				F3FD827B29142DD800C4DB22 /* FileClient.swift */,
 			);
 			path = Features;
 			sourceTree = "<group>";
@@ -298,9 +301,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F3D182FC27873C46001377CC /* AppState.swift in Sources */,
+				F3D182FC27873C46001377CC /* AppRoot.swift in Sources */,
 				F3D182FE27873CA1001377CC /* File.swift in Sources */,
-				F3D182CC27873B88001377CC /* ContentView.swift in Sources */,
+				F3D182CC27873B88001377CC /* AppRootView.swift in Sources */,
+				F3FD827C29142DD800C4DB22 /* FileClient.swift in Sources */,
 				F3D182CA27873B88001377CC /* TCATableApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -626,15 +630,15 @@
 			repositoryURL = "https://github.com/pointfreeco/swift-composable-architecture";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 0.9.0;
+				minimumVersion = 0.45.0;
 			};
 		};
 		F3D1830627873E47001377CC /* XCRemoteSwiftPackageReference "idd-swift-commons" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/kdeda/idd-swift-commons";
 			requirement = {
-				branch = master;
-				kind = branch;
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.3.5;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */

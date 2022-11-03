@@ -1,5 +1,5 @@
 //
-//  ContentView.swift
+//  AppRootView.swift
 //  TCATable
 //
 //  Created by Klajd Deda on 12/27/21.
@@ -11,8 +11,8 @@ import ComposableArchitecture
 import Log4swift
 import TableView
 
-struct ContentView: View {
-    let store: Store<AppState, AppAction>
+struct AppRootView: View {
+    let store: StoreOf<AppRoot>
 
     fileprivate func selectionString(count: Int) -> String {
         switch count {
@@ -147,14 +147,21 @@ struct ContentView: View {
     }
 }
 
-struct ContentView_Previews: PreviewProvider {
+struct AppRootView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView(store: AppState.mock)
-            .frame(width: 815)
-            .background(Color(NSColor.windowBackgroundColor))
-            .environment(\.colorScheme, .light)
-        ContentView(store: AppState.mock)
-            .background(Color(NSColor.windowBackgroundColor))
-            .environment(\.colorScheme, .dark)
+        AppRootView(store: Store(
+            initialState: AppRoot.State.mock,
+            reducer: AppRoot()
+        ))
+        .frame(width: 815)
+        .background(Color(NSColor.windowBackgroundColor))
+        .environment(\.colorScheme, .light)
+        
+        AppRootView(store: Store(
+            initialState: AppRoot.State.mock,
+            reducer: AppRoot()
+        ))
+        .background(Color(NSColor.windowBackgroundColor))
+        .environment(\.colorScheme, .dark)
     }
 }

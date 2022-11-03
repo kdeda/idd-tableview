@@ -8,9 +8,12 @@
 
 import SwiftUI
 import Log4swift
+import ComposableArchitecture
 
 @main
 struct TCATableApp: App {
+    let store: StoreOf<AppRoot>
+
     init() {
         let IDDLogLogFileName: String? = {
             if UserDefaults.standard.bool(forKey: "standardLog") {
@@ -25,11 +28,15 @@ struct TCATableApp: App {
         // IDDLogLoadConfigFromPath(Bundle.main.path(forResource: "IDDLog", ofType: "plist"))
         Log4swiftConfig.configureLogs(defaultLogFile: IDDLogLogFileName, lock: "IDDLogLock")
         Log4swift[Self.self].info("Starting ...")
+        self.store = Store(
+            initialState: AppRoot.State(),
+            reducer: AppRoot()
+        )
     }
     
     var body: some Scene {
         WindowGroup {
-            ContentView(store: AppState.live)
+            AppRootView(store: store)
         }
     }
 }
