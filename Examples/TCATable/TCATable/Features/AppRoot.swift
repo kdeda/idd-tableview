@@ -65,7 +65,7 @@ struct AppRoot: ReducerProtocol {
                 state.isAppReady = true
 
                 return .task {
-                    await .setFiles(
+                    .setFiles(
                         await fileClient.fetchFiles(URL(fileURLWithPath: NSHomeDirectory()))
                     )
                 }

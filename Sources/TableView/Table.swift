@@ -10,17 +10,27 @@ import AppKit
 import SwiftUI
 import Log4swift
 
-struct RowValueIndex<RowValue>: Identifiable, Equatable where RowValue: Identifiable {
+fileprivate struct RowValueIndex<RowValue>: Identifiable, Equatable where RowValue: Identifiable {
     let id: RowValue.ID
     let bounds: CGRect
 }
 
-enum ScrollDirection: String, Equatable {
+fileprivate enum ScrollDirection: String, Equatable {
     case up
     case down
 }
 
-struct DraggedRowValue: Equatable {
+/**
+ For when we click shift click to extend multiple selection.
+ We want to do what Finder does on List View.
+ */
+fileprivate enum ShiftSelectionDirection {
+    case none
+    case up
+    case down
+}
+
+fileprivate struct DraggedRowValue: Equatable {
     var directions: [ScrollDirection] = []
     
     mutating func appendDirection(_ direction: ScrollDirection) {
@@ -49,7 +59,7 @@ struct DraggedRowValue: Equatable {
 fileprivate var _gValues: [ObjectIdentifier: Any] = [:]
 
 /// https://stackoverflow.com/questions/68785513/how-to-detect-when-swiftui-view-is-being-dragged-over
-struct RowValueIndexPreferenceKey<RowValue>: PreferenceKey where RowValue: Identifiable {
+fileprivate struct RowValueIndexPreferenceKey<RowValue>: PreferenceKey where RowValue: Identifiable {
     typealias Value = [RowValueIndex<RowValue>]
     
     static var defaultValue: [RowValueIndex<RowValue>] {
@@ -95,6 +105,7 @@ public struct Table<RowValue>: View where RowValue: Identifiable, RowValue: Hash
     @State private var rowIndexes: [RowValueIndex<RowValue>] = []
     @State private var draggedRows: [RowValue.ID: DraggedRowValue] = [:]
     @State private var singleSelectionInternalChange = false
+    @State private var shiftSelectionDirection: ShiftSelectionDirection = .none
 
     public init(
         _ rows: Array<RowValue>,
@@ -165,23 +176,60 @@ public struct Table<RowValue>: View where RowValue: Identifiable, RowValue: Hash
         }
     }
 
-    // we are extending the multiple selection
-    // calculate the ranges and select
+    /**
+     We are extending the multiple selection. Calculate the ranges and select.
+     Similar to what List view behaves in Finder.
+     */
     private func extendMultipleSelection(_ rowID: RowValue.ID) {
-        guard let newIndex = rows.firstIndex(where: { $0.id == rowID })
+        guard let clickIndex = rows.firstIndex(where: { $0.id == rowID })
         else { return }
 
         let selectedIndexes = multipleSelection.compactMap { rowID in
             rows.firstIndex(where: { $0.id == rowID })
         }
-        let minIndex = min(selectedIndexes.min() ?? -1, newIndex)
-        let maxIndex = max(selectedIndexes.max() ?? 0, newIndex)
 
-        // Log4swift[Self.self].info("extendSelection: \(rowID)")
-        Log4swift[Self.self].info("newRange: [\(minIndex) ... \(maxIndex)]")
-        (minIndex ... maxIndex).forEach {
+        // the lower and upper are indexes in the array
+        // 0 is lower than 1
+        var currentLower = selectedIndexes.min() ?? 0
+        var currentUpper = selectedIndexes.max() ?? 0
+        let newDirection: ShiftSelectionDirection = {
+            if shiftSelectionDirection == .up {
+                // we were going up, so any click above the upper should be up
+                return (clickIndex < currentUpper) ? .up : .down
+            } else if shiftSelectionDirection == .down {
+                // we were going down, so any click above the lower should be down
+                return (clickIndex > currentLower) ? .down : .up
+            }
+            // initial case
+            return (clickIndex > currentLower) ? .down : .up
+        }()
+        // Log4swift[Self.self].info("newDirection: \(newDirection)")
+
+        if newDirection == .up {
+            if shiftSelectionDirection == .down {
+                currentUpper = currentLower
+            }
+            // currentUpper = currentLower
+            currentLower = clickIndex
+        } else {
+            if shiftSelectionDirection == .up {
+                currentLower = currentUpper
+            }
+            currentUpper = clickIndex
+            // currentLower = currentLower
+        }
+
+        multipleSelection.removeAll()
+        if currentLower > currentUpper {
+            // we should not get here
+            Log4swift[Self.self].error("bad range: [\(currentLower) ... \(currentUpper)]")
+            currentLower = clickIndex
+            currentUpper = clickIndex
+        }
+        (currentLower ... currentUpper).forEach {
             selectRowID(rows[$0].id)
         }
+        self.shiftSelectionDirection = newDirection
     }
 
     @ViewBuilder
@@ -211,24 +259,34 @@ public struct Table<RowValue>: View where RowValue: Identifiable, RowValue: Hash
         // .border(Color.yellow)
         .contentShape(Rectangle())
         .onTapGesture {
-            // when selecting one row we remove all other selections
+            // manage user inpout row selection.
+            // it gets a bit tricky with multiple selections
             // this is called after a resounding click
             // if we drag the DragGesture.onChange will be stolen
             //
             switch selectionType {
-            case .single: singleSelection = .none
+            case .single:
+                singleSelection = .none
+                selectRowID(rowValue.id)
             case .multiple:
                 let modifierFlags = NSApp.currentEvent?.modifierFlags
                 let flags = modifierFlags ?? NSEvent.ModifierFlags(rawValue: 0)
-                let isShiftClick = flags.contains([.shift]) // click + shift
 
-                if isShiftClick {
+                if flags.contains([.shift]) {
+                    // click + shift  extend the selection
                     extendMultipleSelection(rowValue.id)
+                } else if flags.contains([.command]) {
+                    // click + command  toggle the extra selection
+                    if isSelectedRowID(rowValue.id) {
+                        unselectRowID(rowValue.id)
+                    } else {
+                        selectRowID(rowValue.id)
+                    }
                 } else {
                     multipleSelection.removeAll()
+                    selectRowID(rowValue.id)
                 }
             }
-            selectRowID(rowValue.id)
             draggedRows.removeAll()
         }
         //        .onHover(perform: { value in
