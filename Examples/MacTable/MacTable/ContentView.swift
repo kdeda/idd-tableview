@@ -3,7 +3,7 @@
 //  MacTable
 //
 //  Created by Klajd Deda on 12/27/21.
-//  Copyright (C) 1997-2021 id-design, inc. All rights reserved.
+//  Copyright (C) 1997-2022 id-design, inc. All rights reserved.
 //
 
 import SwiftUI
@@ -131,7 +131,7 @@ struct ContentView: View {
             }
             .id(showExtraColumn ? "showExtraColumn=true" : "showExtraColumn=false")
         }
-        .frame(minWidth: 680, maxWidth: 1280, minHeight: 480, maxHeight: 800)
+        .frame(minWidth: 680, minHeight: 480)
         // .debug()
     }
 }

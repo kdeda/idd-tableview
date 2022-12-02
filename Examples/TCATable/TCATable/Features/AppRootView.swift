@@ -3,7 +3,7 @@
 //  TCATable
 //
 //  Created by Klajd Deda on 12/27/21.
-//  Copyright (C) 1997-2021 id-design, inc. All rights reserved.
+//  Copyright (C) 1997-2022 id-design, inc. All rights reserved.
 //
 
 import SwiftUI
@@ -53,6 +53,7 @@ struct AppRootView: View {
         WithViewStore(store) { viewStore in
             VStack(spacing: 0) {
                 headerView()
+                    // .border(Color.yellow)
                 Divider()
                 TableView.Table(
                     viewStore.files,
@@ -104,7 +105,7 @@ struct AppRootView: View {
                     .sortDescriptor(compare: { $0.modificationDate < $1.modificationDate })
 
                     TableColumn("File Name", alignment: .leading) { rowValue in
-                        Text(rowValue.fileName)
+                        Text("\(String(format: "%04d - %@", rowValue.id, rowValue.fileName))")
                             .lineLimit(1)
                             .font(.subheadline)
                             .frame(height: 24)
@@ -130,6 +131,7 @@ struct AppRootView: View {
                     .frame(minWidth: 180, maxWidth: .infinity)
                     .sortDescriptor(compare: { $0.filePath < $1.filePath })
                 }
+                .setIntraRowSpacing(1)
                 Divider()
                 HStack {
                     Spacer()
@@ -138,10 +140,11 @@ struct AppRootView: View {
                         .font(.subheadline)
                         .padding(.all, 8)
                 }
+                // .border(Color.yellow)
             }
             // from TableHeader.body tips
             // the intrinsic size should be 740 + (7 + 6) * 5 + 10 or 815
-            .frame(minWidth: 815, maxWidth: 1280, minHeight: 480, maxHeight: 800)
+            .frame(minWidth: 815, minHeight: 480)
             .onAppear(perform: { viewStore.send(.appDidStart) })
         }
     }
@@ -153,7 +156,8 @@ struct AppRootView_Previews: PreviewProvider {
             initialState: AppRoot.State.mock,
             reducer: AppRoot()
         ))
-        .frame(width: 815)
+        .frame(width: 840)
+        .frame(height: 640)
         .background(Color(NSColor.windowBackgroundColor))
         .environment(\.colorScheme, .light)
         

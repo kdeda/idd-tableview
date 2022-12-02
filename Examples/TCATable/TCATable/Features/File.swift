@@ -3,14 +3,14 @@
 //  TCATable
 //
 //  Created by Klajd Deda on 12/27/21.
-//  Copyright (C) 1997-2021 id-design, inc. All rights reserved.
+//  Copyright (C) 1997-2022 id-design, inc. All rights reserved.
 //
 
 import Foundation
 import AppKit
 import SwiftCommons
 
-struct File: Equatable {
+struct File: Equatable, Identifiable {
     static var lastModified: DateFormatter = {
         let rv = DateFormatter.init()
         
@@ -18,6 +18,8 @@ struct File: Equatable {
         rv.dateFormat = "MMM d, yyy 'at' h:mm:ss a"
         return rv
     }()
+
+    var id: Int
 
     // this is derived and so it does not participate in the copy process
     // this allows sorting to be a tad bit faster
@@ -32,9 +34,10 @@ struct File: Equatable {
     let fileName: String
     var filePath: String
 
-    init(_ fileURL: URL) {
+    init(id: Int, fileURL: URL) {
+        self.id = id
+
         // self.fileURL = fileURL
-        
         // TODO: figure a better way to display relative paths ...
         self.relativePath = fileURL.path
         self.logicalSize = fileURL.logicalSize
@@ -46,12 +49,6 @@ struct File: Equatable {
     
     var icon: NSImage {
         NSWorkspace.shared.icon(forFile: filePath)
-    }
-}
-
-extension File: Identifiable {
-    public var id: String {
-        self.filePath
     }
 }
 
