@@ -1,16 +1,14 @@
 {
-  "object": {
-    "pins": [
-      {
-        "package": "idd-log4-swift",
-        "repositoryURL": "https://github.com/kdeda/idd-log4-swift.git",
-        "state": {
-          "branch": null,
-          "revision": "377fbfbd60cd2554a25bc822e0015bdb1d99bcae",
-          "version": "1.2.1"
-        }
+  "pins" : [
+    {
+      "identity" : "swift-log",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-log.git",
+      "state" : {
+        "revision" : "32e8d724467f8fe623624570367e3d50c5638e46",
+        "version" : "1.5.2"
       }
-    ]
-  },
-  "version": 1
+    }
+  ],
+  "version" : 2
 }

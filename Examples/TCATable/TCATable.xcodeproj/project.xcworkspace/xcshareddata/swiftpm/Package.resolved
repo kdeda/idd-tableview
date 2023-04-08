@@ -1,106 +1,113 @@
 {
-  "object": {
-    "pins": [
-      {
-        "package": "combine-schedulers",
-        "repositoryURL": "https://github.com/pointfreeco/combine-schedulers",
-        "state": {
-          "branch": null,
-          "revision": "882ac01eb7ef9e36d4467eb4b1151e74fcef85ab",
-          "version": "0.9.1"
-        }
-      },
-      {
-        "package": "idd-log4-swift",
-        "repositoryURL": "https://github.com/kdeda/idd-log4-swift.git",
-        "state": {
-          "branch": null,
-          "revision": "377fbfbd60cd2554a25bc822e0015bdb1d99bcae",
-          "version": "1.2.1"
-        }
-      },
-      {
-        "package": "idd-swift-commons",
-        "repositoryURL": "https://github.com/kdeda/idd-swift-commons",
-        "state": {
-          "branch": null,
-          "revision": "24f18c296733fd342bdd51588afe79a46a52aaf7",
-          "version": "1.3.5"
-        }
-      },
-      {
-        "package": "idd-zstd-swift",
-        "repositoryURL": "https://github.com/kdeda/idd-zstd-swift.git",
-        "state": {
-          "branch": null,
-          "revision": "3e121dd7510af722777fe87f10d1463903a1b988",
-          "version": "1.2.1"
-        }
-      },
-      {
-        "package": "swift-case-paths",
-        "repositoryURL": "https://github.com/pointfreeco/swift-case-paths",
-        "state": {
-          "branch": null,
-          "revision": "bb436421f57269fbcfe7360735985321585a86e5",
-          "version": "0.10.1"
-        }
-      },
-      {
-        "package": "swift-clocks",
-        "repositoryURL": "https://github.com/pointfreeco/swift-clocks",
-        "state": {
-          "branch": null,
-          "revision": "692ec4f5429a667bdd968c7260dfa2b23adfeffc",
-          "version": "0.1.4"
-        }
-      },
-      {
-        "package": "swift-collections",
-        "repositoryURL": "https://github.com/apple/swift-collections",
-        "state": {
-          "branch": null,
-          "revision": "f504716c27d2e5d4144fa4794b12129301d17729",
-          "version": "1.0.3"
-        }
-      },
-      {
-        "package": "swift-composable-architecture",
-        "repositoryURL": "https://github.com/pointfreeco/swift-composable-architecture",
-        "state": {
-          "branch": null,
-          "revision": "1fcd53fc875bade47d850749ea53c324f74fd64d",
-          "version": "0.45.0"
-        }
-      },
-      {
-        "package": "swift-custom-dump",
-        "repositoryURL": "https://github.com/pointfreeco/swift-custom-dump",
-        "state": {
-          "branch": null,
-          "revision": "819d9d370cd721c9d87671e29d947279292e4541",
-          "version": "0.6.0"
-        }
-      },
-      {
-        "package": "swift-identified-collections",
-        "repositoryURL": "https://github.com/pointfreeco/swift-identified-collections",
-        "state": {
-          "branch": null,
-          "revision": "bfb0d43e75a15b6dfac770bf33479e8393884a36",
-          "version": "0.4.1"
-        }
-      },
-      {
-        "package": "xctest-dynamic-overlay",
-        "repositoryURL": "https://github.com/pointfreeco/xctest-dynamic-overlay",
-        "state": {
-          "branch": null,
-          "revision": "16e6409ee82e1b81390bdffbf217b9c08ab32784",
-          "version": "0.5.0"
-        }
+  "pins" : [
+    {
+      "identity" : "combine-schedulers",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/pointfreeco/combine-schedulers",
+      "state" : {
+        "revision" : "882ac01eb7ef9e36d4467eb4b1151e74fcef85ab",
+        "version" : "0.9.1"
       }
-    ]
-  },
-  "version": 1
+    },
+    {
+      "identity" : "idd-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/kdeda/idd-swift.git",
+      "state" : {
+        "revision" : "211c6639922c63395e45f209374a20e4baf02ae3",
+        "version" : "2.0.1"
+      }
+    },
+    {
+      "identity" : "idd-zstd-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/kdeda/idd-zstd-swift.git",
+      "state" : {
+        "revision" : "2c3da92c9953fa17a6d578691453c262f694c378",
+        "version" : "2.0.1"
+      }
+    },
+    {
+      "identity" : "swift-case-paths",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/pointfreeco/swift-case-paths",
+      "state" : {
+        "revision" : "bb436421f57269fbcfe7360735985321585a86e5",
+        "version" : "0.10.1"
+      }
+    },
+    {
+      "identity" : "swift-clocks",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/pointfreeco/swift-clocks",
+      "state" : {
+        "revision" : "692ec4f5429a667bdd968c7260dfa2b23adfeffc",
+        "version" : "0.1.4"
+      }
+    },
+    {
+      "identity" : "swift-collections",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-collections",
+      "state" : {
+        "revision" : "f504716c27d2e5d4144fa4794b12129301d17729",
+        "version" : "1.0.3"
+      }
+    },
+    {
+      "identity" : "swift-composable-architecture",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/pointfreeco/swift-composable-architecture",
+      "state" : {
+        "revision" : "1fcd53fc875bade47d850749ea53c324f74fd64d",
+        "version" : "0.45.0"
+      }
+    },
+    {
+      "identity" : "swift-crypto",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-crypto.git",
+      "state" : {
+        "revision" : "da0fe44138ab86e380f40a2acbd8a611b07d3f64",
+        "version" : "2.4.0"
+      }
+    },
+    {
+      "identity" : "swift-custom-dump",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/pointfreeco/swift-custom-dump",
+      "state" : {
+        "revision" : "819d9d370cd721c9d87671e29d947279292e4541",
+        "version" : "0.6.0"
+      }
+    },
+    {
+      "identity" : "swift-identified-collections",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/pointfreeco/swift-identified-collections",
+      "state" : {
+        "revision" : "bfb0d43e75a15b6dfac770bf33479e8393884a36",
+        "version" : "0.4.1"
+      }
+    },
+    {
+      "identity" : "swift-log",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-log.git",
+      "state" : {
+        "revision" : "32e8d724467f8fe623624570367e3d50c5638e46",
+        "version" : "1.5.2"
+      }
+    },
+    {
+      "identity" : "xctest-dynamic-overlay",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/pointfreeco/xctest-dynamic-overlay",
+      "state" : {
+        "revision" : "16e6409ee82e1b81390bdffbf217b9c08ab32784",
+        "version" : "0.5.0"
+      }
+    }
+  ],
+  "version" : 2
 }

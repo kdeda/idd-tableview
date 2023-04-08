@@ -72,7 +72,7 @@
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "-standardLog YES"
+            argument = "-standardLog true"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>
