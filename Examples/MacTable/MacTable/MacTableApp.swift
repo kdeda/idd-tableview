@@ -8,7 +8,6 @@
 
 import SwiftUI
 import Log4swift
-import Logging
 
 @main
 struct MacTableApp: App {
